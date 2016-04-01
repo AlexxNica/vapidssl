@@ -1,0 +1,83 @@
+cmake_minimum_required (VERSION 2.8.10)
+
+project (VapidSSL NONE)
+
+################################################################################
+# The variables below should be all you need to set.  The defaults assume
+# BoringSSL and GoogleTest are under the same directly as VapidSSL.  Once set,
+# you can build using the following:
+# .../vapidssl$ mkdir build
+# .../vapidssl$ cd build
+# .../vapidssl/build$ cmake -GNinja ..
+# .../vapidssl/build$ ninja rebuild-boringssl
+# .../vapidssl/build$ ninja rebuild-googletest
+# .../vapidssl/build$ ninja
+
+set(BORINGSSL_ROOT ${PROJECT_SOURCE_DIR}/../boringssl)
+set(GOOGLETEST_ROOT ${PROJECT_SOURCE_DIR}/../googletest/googletest)
+
+# Optionally, you can also change these if you wish.
+
+set(LIBCRYPTO_BUILD_DIR ${BORINGSSL_ROOT}/build)
+set(LIBGTEST_BUILD_DIR ${GOOGLETEST_ROOT}/build)
+
+################################################################################
+
+enable_language(C)
+enable_language(CXX)
+enable_testing()
+
+include_directories(${BORINGSSL_ROOT}/include)
+add_library(crypto STATIC IMPORTED)
+set_property(TARGET crypto PROPERTY IMPORTED_LOCATION ${LIBCRYPTO_BUILD_DIR}/crypto/libcrypto.a)
+add_custom_target(rebuild-boringssl
+  COMMAND rm -rf ${LIBCRYPTO_BUILD_DIR}
+  COMMAND mkdir ${LIBCRYPTO_BUILD_DIR}
+  COMMAND cd ${LIBCRYPTO_BUILD_DIR}
+  COMMAND ${CMAKE_COMMAND} -GNinja ${BORINGSSL_ROOT} -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DCMAKE_C_FLAGS="-DOPENSSL_NO_THREADS -DOPENSSL_SMALL"
+  COMMAND ninja
+  WORKING_DIRECTORY ${BORINGSSL_ROOT})
+
+include(${GOOGLETEST_ROOT}/cmake/internal_utils.cmake)
+config_compiler_and_linker()
+include_directories(${GOOGLETEST_ROOT}/include)
+add_library(gtest STATIC IMPORTED)
+set_property(TARGET gtest PROPERTY IMPORTED_LOCATION ${LIBGTEST_BUILD_DIR}/libgtest.a)
+add_library(gtest_main STATIC IMPORTED)
+set_property(TARGET gtest_main PROPERTY IMPORTED_LOCATION ${LIBGTEST_BUILD_DIR}/libgtest_main.a)
+add_custom_target(rebuild-googletest
+  COMMAND rm -rf ${LIBGTEST_BUILD_DIR}
+  COMMAND mkdir ${LIBGTEST_BUILD_DIR}
+  COMMAND cd ${LIBGTEST_BUILD_DIR}
+  COMMAND ${CMAKE_COMMAND} -GNinja ${GOOGLETEST_ROOT}
+  COMMAND ninja
+  WORKING_DIRECTORY ${GOOGLETEST_ROOT})
+
+# Replacement for cxx_executable in googletest's internal_utils.cmake
+# That function did not link both gtest and gtest_main, assuming the top-level
+# CMakeList would do it.  Since we're not using that, we need to tweak it here
+function(add_gtest name)
+  add_executable(${name} ${name}.cc)
+  set_target_properties(${name} PROPERTIES COMPILE_FLAGS "${cxx_default} -g")
+  target_link_libraries(${name} vapidssl crypto gtest_main gtest pthread)
+  add_test(${name} ${name})
+endfunction()
+
+# TODO: Function to strip and pack
+# More ideas: http://codereview.stackexchange.com/questions/103972/cmake-module-to-make-executable-as-small-as-possible
+# strip -s -R .note.gnu.gold-version -R .comment -R .note -R .note.gnu.build-id -R .note.ABI-tag ${name})
+# upx pushes it further, down to only 16k... but this may not pass the chain-of-custody test
+# upx --ultra-brute examples/client-small
+function(strip_and_pack name)
+  add_custom_command(TARGET ${name}
+    POST_BUILD
+    COMMAND strip -s -R .note.gnu.gold-version -R .comment -R .note -R .note.gnu.build-id -R .note.ABI-tag ${name})
+endfunction()
+
+set(C_CXX_FLAGS "-Wall -Werror -Wformat=2 -Wsign-compare -Wmissing-field-initializers -ggdb -fvisibility=hidden")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${C_CXX_FLAGS} -std=c11 -Wmissing-prototypes -Wshadow")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x ${C_CXX_FLAGS} -Wmissing-declarations -Wshadow")
+
+include_directories(include)
+#add_subdirectory(src)
+#add_subdirectory(examples)

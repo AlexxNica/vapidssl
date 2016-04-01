@@ -17,3 +17,14 @@ tags
 TAGS
 
 # End common set.
+
+# Other platforms
+*.swp
+*.swo
+.DS_Store
+
+# CMake out-of-place build files
+build/
+
+# Specific text editors
+*.sublime-*
