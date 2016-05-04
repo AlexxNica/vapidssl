@@ -34,7 +34,7 @@ The build system is not quite yet smart enough to properly figure out how to
 automatically build the external libraries, due to limitations of older version
 of `cmake` as well as some path assumptions of the BoringSSL build system.  As a
 result, the libraries must be built manually at least once before building
-VapidSSL. To (re)build the externl projects, set the relevant project roots in
+VapidSSL. To (re)build the external projects, set the relevant project roots in
 the top-level `CMakeLists.txt` and use the `ninja` targets:
 
     ninja rebuild-boringssl
@@ -43,7 +43,8 @@ the top-level `CMakeLists.txt` and use the `ninja` targets:
 Note that the default build flags in the top-level `CMakeLists.txt` are for
 debugging—optimisation isn't yet possible.
 
-See [CMake](https://cmake.org/cmake/help/v3.4/manual/cmake-variables.7.html) documentation for other variables which may be used to configure the build.
+See [CMake](https://cmake.org/cmake/help/v3.4/manual/cmake-variables.7.html)
+documentation for other variables which may be used to configure the build.
 
 # Running tests
 

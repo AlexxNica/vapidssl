@@ -28,3 +28,7 @@ build/
 
 # Specific text editors
 *.sublime-*
+
+# Third-party is managed by Jiri, see manifest file.
+.jiri/
+third_party/
