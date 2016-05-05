@@ -5,16 +5,16 @@
     <project name="VapidSSL"
              remote="https://fuchsia.googlesource.com/vapidssl"
              path="vapidssl"
-             githooks="manifests/git-hooks"/>
+             githooks="manifest/git-hooks"/>
     <project name="BoringSSL"
              remote="https://boringssl.googlesource.com/boringssl"
              revision="8107e92a1aa71cee717450c25dace2a32233a917"
              path="vapidssl/third_party/boringssl"
-             githooks="manifests/git-hooks"/>
+             githooks="manifest/git-hooks"/>
     <project name="Googletest"
              remote="https://github.com/google/googletest.git"
              revision="d225acc90bc3a8c420a9bcd1f033033c1ccd7fe0"
              path="vapidssl/third_party/gtest"
-             githooks="manifests/git-hooks"/>
+             githooks="manifest/git-hooks"/>
   </projects>
 </manifest>
