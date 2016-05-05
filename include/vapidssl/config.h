@@ -12,13 +12,13 @@
  * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. */
 
-#ifndef INCLUDE_VAPIDSSL_CONFIG_H_
-#define INCLUDE_VAPIDSSL_CONFIG_H_
+#ifndef VAPIDSSL_CONFIG_H_
+#define VAPIDSSL_CONFIG_H_
 
 #include <stddef.h>
 #include <stdint.h>
 
-#include "include/vapidssl/error.h"
+#include "vapidssl/error.h"
 
 #if defined(__cplusplus)
 extern "C" {
@@ -154,4 +154,4 @@ void* TLS_CONFIG_cleanup(TLS_CONFIG* config);
 }
 #endif
 
-#endif /* INCLUDE_VAPIDSSL_CONFIG_H_ */
+#endif /* VAPIDSSL_CONFIG_H_ */

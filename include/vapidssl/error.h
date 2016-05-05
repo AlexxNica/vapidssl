@@ -12,8 +12,8 @@
  * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. */
 
-#ifndef INCLUDE_VAPIDSSL_ERROR_H_
-#define INCLUDE_VAPIDSSL_ERROR_H_
+#ifndef VAPIDSSL_ERROR_H_
+#define VAPIDSSL_ERROR_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -226,4 +226,4 @@ void* TLS_ERROR_cleanup(void);
 }
 #endif
 
-#endif /* INCLUDE_VAPIDSSL_ERROR_H_ */
+#endif /* VAPIDSSL_ERROR_H_ */
