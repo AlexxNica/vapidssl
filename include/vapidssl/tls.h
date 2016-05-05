@@ -56,7 +56,7 @@ tls_result_t TLS_connect_size(const TLS_CONFIG* config, size_t* out,
 
 /* TLS_new takes a region of memory of |len| bytes starting at |mem| and
  * configures a TLS connection structure according to the parameters set in
- * |config| and associated with the paltform-specific |connection_id|.
+ * |config| and associated with the platform-specific |connection_id|.
  * |TLS_CONFIG_freeze| must already have been called on |config|. |TLS_new|
  * returns NULL on error.
  *
@@ -142,7 +142,7 @@ tls_result_t TLS_write(TLS* tls, const void* buf, size_t num);
  * to do so may lead to a truncation attack. */
 tls_result_t TLS_shutdown(TLS* tls);
 
-/* TLS_cleanup zeroes the memory used by the |tls| connection and returns it. If
+/* TLS_cleanup zeros the memory used by the |tls| connection and returns it. If
  * |tls| is NULL, it returns NULL.  It will generate an error if |tls| has been
  * connected via |TLS_connect| but not shut down via |TLS_shutdown|.
  *

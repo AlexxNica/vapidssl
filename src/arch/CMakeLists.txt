@@ -4,12 +4,12 @@
 # options.
 
 ################################################################################
-### arch-linux-nothreads ###
+### arch-linux-none ###
 # Linux version of the library that doesn't use threads.
 # TODO(aarongreen): Enable this once we're ready to build samples under
 # examples/.
 #add_library(
-#  arch-linux-nothreads
+#  arch-linux-none
 #
 #  OBJECT
 #

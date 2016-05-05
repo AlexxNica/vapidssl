@@ -37,7 +37,9 @@ typedef struct tls_config_st TLS_CONFIG;
 
 /* Supported hash algorithms, numbered per RFC 5246, section 7.4.1.4.1
  * (https://tools.ietf.org/html/rfc5246#section-7.4.1.4.1). These should
- * correspond to the ciphersuites enumerated by |ciphersuite_t|. */
+ * correspond to the ciphersuites enumerated by |ciphersuite_t|. When adding new
+ * hash algorithms, be sure to update |VAPIDSSL_HASHES| in
+ * vapidssl/internal/base.h. */
 typedef enum tls_hash_t {
   kTlsHashSHA256 = 4,
   kTlsHashSHA384 = 5,
@@ -46,7 +48,9 @@ typedef enum tls_hash_t {
 /* Supported TLS cipher IDs, numbered per
  * https://tools.ietf.org/html/rfc5246#appendix-A.5,
  * https://tools.ietf.org/html/rfc5289#section-3, and
- * https://tools.ietf.org/html/draft-agl-tls-chacha20poly1305-04#section-6. */
+ * https://tools.ietf.org/html/draft-agl-tls-chacha20poly1305-04#section-6.
+ * When adding new ciphersuites, be sure to update |VAPIDSSL_CIPHERSUITES| in
+ * vapidssl/internal/base.h. */
 typedef enum tls_ciphersuite_t {
   kTLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256 = 0xC02F,
   kTLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 = 0xC030,
@@ -54,7 +58,9 @@ typedef enum tls_ciphersuite_t {
 } tls_ciphersuite_t;
 
 /* Supported TLS named EC curves, per
- * https://tools.ietf.org/html/draft-ietf-tls-curve25519-01. */
+ * https://tools.ietf.org/html/draft-ietf-tls-curve25519-01. When adding new
+ * elliptic curves, be sure to update |VAPIDSSL_CURVES| in
+ * vapidssl/internal/base.h. */
 typedef enum tls_curve_t {
   kTlsCurve25519 = 0x001D,
 } tls_curve_t;
@@ -144,7 +150,7 @@ tls_result_t TLS_CONFIG_set_max_name_len(TLS_CONFIG* config, size_t size);
  * only be called when a |config| has not yet been frozen. */
 tls_result_t TLS_CONFIG_freeze(TLS_CONFIG* config);
 
-/* TLS_CONFIG_cleanup zeroes the memory used by the |config| and returns it. It
+/* TLS_CONFIG_cleanup zeros the memory used by the |config| and returns it. It
  * will return NULL if |config| is NULL.
  *
  * This function is thread-safe when compiled with support for threads.  */

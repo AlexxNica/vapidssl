@@ -75,5 +75,5 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${C_CXX_FLAGS} -std=c11 -Wmissing-prototypes
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x ${C_CXX_FLAGS} -Wmissing-declarations -Wshadow")
 
 include_directories(include)
-#add_subdirectory(src)
+add_subdirectory(src)
 #add_subdirectory(examples)
