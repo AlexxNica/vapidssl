@@ -14,15 +14,15 @@
 
 #ifndef VAPIDSSL_TLS_H_
 #define VAPIDSSL_TLS_H_
+#if defined(__cplusplus)
+extern "C" {
+#endif /* __cplusplus */
 
 #include <stddef.h>
 #include <stdint.h>
 
 #include "vapidssl/error.h"
 
-#if defined(__cplusplus)
-extern "C" {
-#endif
 
 /* This is the public TLS connection API for VapidSSL.  It exposes a TLS
  * connection type which represent an individual connection to a servers.
@@ -46,13 +46,13 @@ typedef uint64_t tls_connection_id_t;
 
 /* TLS_size sets |out| to be the amount of memory needed for a call to
  * |TLS_new|, given the values currently configured in |config|. */
-tls_result_t TLS_size(const TLS_CONFIG* config, size_t* out);
+tls_result_t TLS_size(const TLS_CONFIG *config, size_t *out);
 
 /* TLS_connect_size sets |out| to be the amount of memory needed for a call to
  * |TLS_connect|, given the values currently in |config| and the UTF8-encoded
  * server name. */
-tls_result_t TLS_connect_size(const TLS_CONFIG* config, size_t* out,
-                              const char* server);
+tls_result_t TLS_connect_size(const TLS_CONFIG *config, size_t *out,
+                              const char *server);
 
 /* TLS_new takes a region of memory of |len| bytes starting at |mem| and
  * configures a TLS connection structure according to the parameters set in
@@ -62,8 +62,8 @@ tls_result_t TLS_connect_size(const TLS_CONFIG* config, size_t* out,
  *
  * |TLS_new| is thread-safe when compiled with support for threads; multiple
  * threads may create TLS connections using the same |config| concurrently. */
-TLS* TLS_new(const TLS_CONFIG* config, tls_connection_id_t connection_id,
-             void* mem, size_t len);
+TLS *TLS_new(const TLS_CONFIG *config, tls_connection_id_t connection_id,
+             void *mem, size_t len);
 
 /* TLS_connect performs a TLS 1.2 handshake using the given |tls| structure. It
  * uses |len| additional bytes of memory starting at |mem| to perform the
@@ -87,7 +87,7 @@ TLS* TLS_new(const TLS_CONFIG* config, tls_connection_id_t connection_id,
  * |TLS_connect| is thread-safe but does not block; if |TLS_connect| is called
  * concurrently with any TLS API with the same |tls|, it will generate a
  * |kTlsErrInvalidState| error and return |KFailure| immediately. */
-tls_result_t TLS_connect(TLS* tls, const char* server, void* mem, size_t len);
+tls_result_t TLS_connect(TLS *tls, const char *server, void *mem, size_t len);
 
 /* TLS_read receives up to |num| bytes via the |tls| structure, puts them in
  * |buf|, and puts the number of bytes read in |out|. It returns |kTlsFailure|
@@ -103,7 +103,7 @@ tls_result_t TLS_connect(TLS* tls, const char* server, void* mem, size_t len);
  * |TLS_shutdown| using the same |tls|.  It will not block if called
  * concurrently with |TLS_write|.  It is possible to have separate reader
  * and writer threads that do not block each other. */
-tls_result_t TLS_read(TLS* tls, void* out, size_t* out_len, size_t num);
+tls_result_t TLS_read(TLS *tls, void *out, size_t *out_len, size_t num);
 
 /* TLS_write takes |num| bytes from |buf| and sends them via the |tls|
  * structure.  It returns |kTlsFailure| on error and |kTlsSuccess| otherwise.
@@ -123,7 +123,7 @@ tls_result_t TLS_read(TLS* tls, void* out, size_t* out_len, size_t num);
  * |TLS_shutdown| using the same |tls|.  It will not block if called
  * concurrently with |TLS_read|.  It is possible to have separate reader
  * and writer threads that do not block each other. */
-tls_result_t TLS_write(TLS* tls, const void* buf, size_t num);
+tls_result_t TLS_write(TLS *tls, const void *buf, size_t num);
 
 /* TLS_shutdown sends a CloseNotify alert as necessary to the remote peer to
  * indicate that the |tls| connection is being torn down.  If a CloseNotify
@@ -140,17 +140,16 @@ tls_result_t TLS_write(TLS* tls, const void* buf, size_t num);
  *
  * API consumers MUST call |TLS_shutdown| when ending a TLS connection.  Failure
  * to do so may lead to a truncation attack. */
-tls_result_t TLS_shutdown(TLS* tls);
+tls_result_t TLS_shutdown(TLS *tls);
 
 /* TLS_cleanup zeros the memory used by the |tls| connection and returns it. If
  * |tls| is NULL, it returns NULL.  It will generate an error if |tls| has been
  * connected via |TLS_connect| but not shut down via |TLS_shutdown|.
  *
  * |TLS_cleanup| is thread-safe when compiled with support for threads. */
-void* TLS_cleanup(TLS* tls);
+void *TLS_cleanup(TLS *tls);
 
 #if defined(__cplusplus)
 }
-#endif
-
+#endif /* __cplusplus */
 #endif /* VAPIDSSL_TLS_H_ */

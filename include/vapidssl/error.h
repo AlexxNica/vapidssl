@@ -14,13 +14,12 @@
 
 #ifndef VAPIDSSL_ERROR_H_
 #define VAPIDSSL_ERROR_H_
+#if defined(__cplusplus)
+extern "C" {
+#endif /* __cplusplus */
 
 #include <stddef.h>
 #include <stdint.h>
-
-#if defined(__cplusplus)
-extern "C" {
-#endif
 
 /* This is the public API for error handling in VapidSSL.  It has API calls to
  * get the most recent error and associated location information about where the
@@ -184,12 +183,12 @@ enum tls_error_t {
 /* TLS_ERROR_size sets |out| to be the amount of memory needed for a call to
  * |TLS_ERROR_init| to create a thread-local error structure that can hold the
  * packed error code and location information. */
-tls_result_t TLS_ERROR_size(size_t* out);
+tls_result_t TLS_ERROR_size(size_t *out);
 
 /* TLS_ERROR_init takes a memory region of |len| bytes starting at |mem| and
  * uses it to create a thread-local error structure for the packed error code
  * and location information. */
-tls_result_t TLS_ERROR_init(void* mem, size_t len);
+tls_result_t TLS_ERROR_init(void *mem, size_t len);
 
 /* TLS_ERROR_get examines and copies the details of the the most recent error.
  * If |TLS_ERROR_init| has not been called, it returns |kTlsFailure| with no
@@ -198,8 +197,8 @@ tls_result_t TLS_ERROR_init(void* mem, size_t len);
  * of the |out_reason| value depends on the value of |out_source|; see
  * |tls_error_source_t| for details.  If no error was generated during the last
  * API call, all of these fields will be 0 or NULL, as appropriate. */
-tls_result_t TLS_ERROR_get(tls_error_source_t* out_source, int* out_reason,
-                           const char** out_file, int* out_line);
+tls_result_t TLS_ERROR_get(tls_error_source_t *out_source, int *out_reason,
+                           const char **out_file, int *out_line);
 
 /* TLS_ERROR_test checks whether the most recent error has a given |source| and
  * |reason|.  More precisely, it returns |kTlsSuccess| if |TLS_ERROR_get| would
@@ -210,10 +209,9 @@ tls_result_t TLS_ERROR_test(tls_error_source_t source, int reason);
 /* TLS_ERROR_cleanup clears the thread-local error structure and returns the
  * memory it was using for it.  Subsequent calls |TLS_ERROR_cleanup| do nothing
  * and return NULL. */
-void* TLS_ERROR_cleanup(void);
+void *TLS_ERROR_cleanup(void);
 
 #if defined(__cplusplus)
 }
-#endif
-
+#endif /* __cplusplus */
 #endif /* VAPIDSSL_ERROR_H_ */

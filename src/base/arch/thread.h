@@ -14,8 +14,9 @@
 
 #ifndef VAPIDSSL_ARCH_THREAD_H
 #define VAPIDSSL_ARCH_THREAD_H
-
-#include "vapidssl/internal/base.h"
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
 
 /* This is the platform and/or OS specific interface for thread-local storage.
  * This file does NOT contain concurrency primitives; see arch/lock.h instead.
@@ -34,4 +35,7 @@ void *thread_get_local(void);
  * responsibility to zero and/or free the memory as appropriate. */
 void thread_set_local(void *mem);
 
+#if defined(__cplusplus)
+}
+#endif /* __cplusplus */
 #endif /* VAPIDSSL_ARCH_THREAD_H */

@@ -12,19 +12,20 @@
  * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. */
 
-#include "vapidssl/internal/error.h"
+#include "base/error.h"
 
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "vapidssl/arch/thread.h"
+#include "base/arch/thread.h"
+#include "vapidssl/error.h"
 
 /* error_st represents an error, combining both an informational code as well as
  * information about where the error occurred. */
 struct error_st {
   /* The __FILE__ where this error was generated. */
-  const char* file;
+  const char *file;
   /* The __LINE__ where this error was generated. */
   int line;
   /* The code where this error was generated. */
@@ -35,7 +36,7 @@ struct error_st {
 
 /* Public functions */
 
-tls_result_t TLS_ERROR_size(size_t* out) {
+tls_result_t TLS_ERROR_size(size_t *out) {
   if (!out) {
     return kTlsFailure;
   }
@@ -43,7 +44,7 @@ tls_result_t TLS_ERROR_size(size_t* out) {
   return kTlsSuccess;
 }
 
-tls_result_t TLS_ERROR_init(void* mem, size_t len) {
+tls_result_t TLS_ERROR_init(void *mem, size_t len) {
   size_t needed;
   if (!TLS_ERROR_size(&needed) || !mem || len < needed) {
     return kTlsFailure;
@@ -53,9 +54,9 @@ tls_result_t TLS_ERROR_init(void* mem, size_t len) {
   return kTlsSuccess;
 }
 
-tls_result_t TLS_ERROR_get(tls_error_source_t* out_source, int* out_reason,
-                           const char** out_file, int* out_line) {
-  struct error_st* local = thread_get_local();
+tls_result_t TLS_ERROR_get(tls_error_source_t *out_source, int *out_reason,
+                           const char **out_file, int *out_line) {
+  struct error_st *local = thread_get_local();
   assert(local); /* Fail hard in debug mode if errors uninitialized. */
   if (!local) {
     return kTlsFailure;
@@ -76,7 +77,7 @@ tls_result_t TLS_ERROR_get(tls_error_source_t* out_source, int* out_reason,
 }
 
 tls_result_t TLS_ERROR_test(tls_error_source_t source, int reason) {
-  struct error_st* local = thread_get_local();
+  struct error_st *local = thread_get_local();
   assert(local); /* Fail hard in debug mode if errors uninitialized. */
   if (!local || local->source != source || local->reason != reason) {
     return kTlsFailure;
@@ -84,8 +85,8 @@ tls_result_t TLS_ERROR_test(tls_error_source_t source, int reason) {
   return kTlsSuccess;
 }
 
-void* TLS_ERROR_cleanup(void) {
-  void* mem = NULL;
+void *TLS_ERROR_cleanup(void) {
+  void *mem = NULL;
   if (error_clear()) {
     mem = thread_get_local();
     thread_set_local(NULL);
@@ -95,14 +96,15 @@ void* TLS_ERROR_cleanup(void) {
 
 /* Library routines */
 
-tls_result_t error_set(const char* file, int line, tls_error_source_t source,
+tls_result_t error_set(const char *file, int line, tls_error_source_t source,
                        int reason) {
-  struct error_st* local = thread_get_local();
+  struct error_st *local = thread_get_local();
   /* This function MUST NOT be called before |TLS_ERROR_init|.  This constraint
    * is satisfied by having every |TLS_CONFIG_*| and |TLS_*| API check that
    * |error_clear| succeeds before proceeding.  If somehow we get here and the
    * constraint is not met, we assume there's been a memory corruption and
    * choose to die an ugly death. */
+  assert(local);
   if (!local) {
     abort();
   }
@@ -114,7 +116,7 @@ tls_result_t error_set(const char* file, int line, tls_error_source_t source,
 }
 
 tls_result_t error_clear() {
-  void* local = thread_get_local();
+  void *local = thread_get_local();
   if (!local) {
     return kTlsFailure;
   }

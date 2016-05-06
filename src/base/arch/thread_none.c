@@ -12,23 +12,26 @@
  * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. */
 
+#include "base/arch/thread.h"
+
 #include <assert.h>
-#include <unistd.h>
-#include "vapidssl/arch/thread.h"
+#include <stdlib.h>
 
 /* NOTE: This file consciously avoids calling any of the error.h functions, as
  * it is the only file that errors.c has a dependency on. */
 
 /* g_local is the "thread local storage" for the non-threaded implementation.
  * Since there's no threads, a single global variable suffices. */
-static void* g_local = NULL;
+static void *g_local = NULL;
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 /* Library routines. */
 
-void* thread_get_local(void) { return g_local; }
+void *thread_get_local(void) {
+  return g_local;
+}
 
-void thread_set_local(void* mem) {
+void thread_set_local(void *mem) {
   assert(!g_local || !mem);
   g_local = mem;
 }

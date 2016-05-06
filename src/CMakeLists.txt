@@ -1,84 +1,40 @@
 # .../src/CMakeLists.txt
 # Builds core VapidSSL library, libvapid.a
+# TODO(aarongreen): Add more conditionals to allow compiling against other
+# platforms, protocols, and crypto libraries.
 
-add_subdirectory(arch)
+add_subdirectory(base)
+add_subdirectory(base/arch)
+#add_subdirectory(common)
 #add_subdirectory(crypto)
+#add_subdirectory(tls1_2)
+#add_subdirectory(x509v3)
 
-################################################################################
-### vapid-common ###
-# Code common to release and test configurations.
 add_library(
-  vapid-internal
+  vapid-core
 
-  OBJECT
-
-#  asn1.c
-#  buf.c
-#  certificate.c
-#  ciphersuite.c
-#  config.c
-  error.c
-#  extension.c
-#  handshake.c
-#  message.c
-#  multihash.c
-#  prf.c
-#  record.c
-#  tls.c
+  $<TARGET_OBJECTS:base>
+#  $<TARGET_OBJECTS:common>
+#  $<TARGET_OBJECTS:crypto-generic>
 )
 
-################################################################################
-### vapid ###
-# Release version of the library
-# TODO(aarongreen): Enable this once we're ready to build samples under
-# examples/.  Add conditionals to select proper arch for the platform and
-# threading options, and the proper crypto implementation.
 #add_library(
 #  vapid
 #
 #  $<TARGET_OBJECTS:arch>
-#  $<TARGET_OBJECTS:crypto-boringssl>
-#  $<TARGET_OBJECTS:vapid-internal>
 #)
-# TODO(aarongreen): Add conditionals to allow compiling against other crypto
-# libs.
-#target_link_libraries(vapid crypto)
+#target_link_libraries(vapid crypto-specific)
 
-################################################################################
-### vapid-test ###
-# Test version of the library; includes some mocks and fakes for the platform-
-# specific and non-deterministic pieces.
-# TODO(aarongreen): Add conditionals to allow compiling against other crypto
-# libs.
-add_library(
-  vapid-test
+add_executable(
+  vapid_test
 
-  $<TARGET_OBJECTS:arch-test>
-#  $<TARGET_OBJECTS:crypto-boringssl>
-  $<TARGET_OBJECTS:vapid-internal>
+  test/unittest_main.cc
+  $<TARGET_OBJECTS:arch-test-generic>
+  $<TARGET_OBJECTS:arch-test-specific>
+  $<TARGET_OBJECTS:base-unittests>
+  #$<TARGET_OBJECTS:common-unittests>
+  #$<TARGET_OBJECTS:crypto-unittests-generic>
 )
-# TODO(aarongreen): Add conditionals to allow compiling against other crypto
-# libs.
-target_link_libraries(vapid-test crypto)
-
-#add_gtest(asn1_test)
-#add_gtest(buf_test)
-#add_gtest(certificate_test)
-#add_gtest(ciphersuite_test)
-#add_gtest(config_test)
-add_gtest(error_test)
-#add_gtest(extension_test)
-#add_gtest(handshake_test)
-#add_gtest(message_test)
-#add_gtest(multihash_test)
-#add_gtest(prf_test)
-#add_gtest(record_test)
-#add_gtest(tls_test)
-
-# TODO(aarongreen): Replace the individual tests with this code once they're all
-# implemented.
-#file(GLOB_RECURSE UNITTESTS "${CMAKE_CURRENT_SOURCE_DIR}" "*_test.cc")
-#foreach(UNITTEST ${UNITTESTS})
-#  get_filename_component(TESTNAME ${UNITTEST} NAME_WE)
-#  add_gtest(${TESTNAME} ${TESTNAME})
-#endforeach()
+target_link_libraries(vapid_test vapid-core gtest)
+set_target_properties(vapid_test PROPERTIES COMPILE_FLAGS "${cxx_default} -g")
+add_test(NAME vapid_test COMMAND vapid_test --base_dir=${PROJECT_SOURCE_DIR})

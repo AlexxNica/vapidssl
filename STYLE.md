@@ -20,7 +20,8 @@ macro would lead to error-prone code duplication.
 
 All files use Google's clang-format style, with the exception that, like
 BoringSSL, single-statement blocks are not allowed. All conditions and loops
-must use braces.
+must use braces.  In contrast to BoringSSL, VapidSSL extends this rule to short
+functions as well, requiring them to break across multiple lines.
 
 
 ## Naming

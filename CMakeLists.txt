@@ -9,6 +9,10 @@ enable_language(C)
 enable_language(CXX)
 enable_testing()
 
+set(ARCH "linux")
+set(CRYPTO "boringssl")
+option(THREADS "Build with threading support" OFF)
+
 ################################################################################
 ### BoringSSL ###
 # TODO(aarongreen): Add conditionals to allow compiling against other crypto
@@ -19,11 +23,18 @@ set(LIBCRYPTO_BUILD_DIR ${BORINGSSL_ROOT}/build)
 include_directories(${BORINGSSL_ROOT}/include)
 add_library(crypto STATIC IMPORTED)
 set_property(TARGET crypto PROPERTY IMPORTED_LOCATION ${LIBCRYPTO_BUILD_DIR}/crypto/libcrypto.a)
+
+if(${THREAD})
+  set(BORINGSSL_CMAKE_C_FLAGS "-DOPENSSL_SMALL")
+else(${THREAD})
+  set(BORINGSSL_CMAKE_C_FLAGS "-DOPENSSL_NO_THREADS -DOPENSSL_SMALL")
+endif(${THREAD})
+
 add_custom_target(rebuild-boringssl
   COMMAND rm -rf ${LIBCRYPTO_BUILD_DIR}
   COMMAND mkdir ${LIBCRYPTO_BUILD_DIR}
   COMMAND cd ${LIBCRYPTO_BUILD_DIR}
-  COMMAND ${CMAKE_COMMAND} -GNinja ${BORINGSSL_ROOT} -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DCMAKE_C_FLAGS="-DOPENSSL_NO_THREADS -DOPENSSL_SMALL"
+  COMMAND ${CMAKE_COMMAND} -GNinja ${BORINGSSL_ROOT} -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DCMAKE_C_FLAGS="${BORINGSSL_CMAKE_C_FLAGS}"
   COMMAND ninja
   WORKING_DIRECTORY ${BORINGSSL_ROOT})
 
@@ -43,19 +54,19 @@ add_custom_target(rebuild-googletest
   COMMAND rm -rf ${LIBGTEST_BUILD_DIR}
   COMMAND mkdir ${LIBGTEST_BUILD_DIR}
   COMMAND cd ${LIBGTEST_BUILD_DIR}
-  COMMAND ${CMAKE_COMMAND} -GNinja ${GOOGLETEST_ROOT}
+  COMMAND ${CMAKE_COMMAND} -GNinja ${GOOGLETEST_ROOT} -Dgtest_disable_pthreads=ON
   COMMAND ninja
   WORKING_DIRECTORY ${GOOGLETEST_ROOT})
 
-# Replacement for cxx_executable in googletest's internal_utils.cmake
-# That function did not link both gtest and gtest_main, assuming the top-level
-# CMakeList would do it.  Since we're not using that, we need to tweak it here
-function(add_gtest name)
-  add_executable(${name} ${name}.cc)
-  set_target_properties(${name} PROPERTIES COMPILE_FLAGS "${cxx_default} -g")
-  target_link_libraries(${name} vapid-test crypto gtest_main gtest pthread)
-  add_test(${name} ${name})
-endfunction()
+set(C_CXX_FLAGS "-Wall -Werror -Wformat=2 -Wsign-compare -Wmissing-field-initializers -ggdb -fvisibility=hidden")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${C_CXX_FLAGS} -std=c11 -Wmissing-prototypes -Wshadow")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 ${C_CXX_FLAGS} -Wmissing-declarations -Wshadow -fno-exceptions")
+
+include_directories(include)
+include_directories(src)
+include_directories(.)
+add_subdirectory(src)
+#add_subdirectory(examples)
 
 # TODO(aarongreen: Enable stripping and/or and packing to reduce file sizes.
 # Some ideas:
@@ -69,11 +80,3 @@ endfunction()
 #    POST_BUILD
 #    COMMAND strip -s -R .note.gnu.gold-version -R .comment -R .note -R .note.gnu.build-id -R .note.ABI-tag ${name})
 #endfunction()
-
-set(C_CXX_FLAGS "-Wall -Werror -Wformat=2 -Wsign-compare -Wmissing-field-initializers -ggdb -fvisibility=hidden")
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${C_CXX_FLAGS} -std=c11 -Wmissing-prototypes -Wshadow")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x ${C_CXX_FLAGS} -Wmissing-declarations -Wshadow")
-
-include_directories(include)
-add_subdirectory(src)
-#add_subdirectory(examples)

@@ -12,13 +12,16 @@
  * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. */
 
-#ifndef VAPIDSSL_INTERNAL_ERROR_H
-#define VAPIDSSL_INTERNAL_ERROR_H
+#ifndef VAPIDSSL_BASE_ERROR_H
+#define VAPIDSSL_BASE_ERROR_H
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
 
-#include "vapidssl/internal/base.h"
+#include "vapidssl/error.h"
 
 /* This is the internal API for error handling in VapidSSL.  See
- * vapidssl/error.h for more detail. */
+ * vapidssl/error.h for more details on the public API. */
 
 /* error_set records the |file|, |line|, |source|, and |reason| details of a
  * generated error.  These details can later be matched by |TLS_ERROR_test| or
@@ -29,7 +32,7 @@
  * are returning early do to an error, e.g. "return ERROR_SET(...);".  This
  * function cannot fail since APIs call and check |error_clear| before
  * proceeding as documented below. */
-tls_result_t error_set(const char* file, int line, tls_error_source_t source,
+tls_result_t error_set(const char *file, int line, tls_error_source_t source,
                        int reason);
 
 /* error_clear resets the error state to indicate no error.  It must be called
@@ -42,4 +45,7 @@ tls_result_t error_clear(void);
  * information to an |error_set| call. */
 #define ERROR_SET(source, reason) error_set(__FILE__, __LINE__, source, reason)
 
-#endif /* VAPIDSSL_INTERNAL_ERROR_H */
+#if defined(__cplusplus)
+}
+#endif /* __cplusplus */
+#endif /* VAPIDSSL_BASE_ERROR_H */
