@@ -8,7 +8,7 @@ add_library(
 
   buf.c
   error.c
-  #list.c
+  list.c
 )
 
 add_library(
@@ -18,7 +18,7 @@ add_library(
 
   buf_unittest.cc
   error_unittest.cc
-  #list_unittest.cc
+  list_unittest.cc
 
   error_test_helper.cc
   error_test_event_listener.cc
