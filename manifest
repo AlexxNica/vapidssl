@@ -8,7 +8,7 @@
              githooks="manifest/git-hooks"/>
     <project name="BoringSSL"
              remote="https://boringssl.googlesource.com/boringssl"
-             revision="8107e92a1aa71cee717450c25dace2a32233a917"
+             revision="bbd43b5e90c073a3c8b719d538a273fe683b9944"
              path="vapidssl/third_party/boringssl"
              githooks="manifest/git-hooks"/>
     <project name="Googletest"
