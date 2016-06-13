@@ -40,6 +40,9 @@ extern "C" {
 /* List structure defined in src/base/list_internal.h. */
 typedef struct list_st LIST;
 
+/* LIST_SIZE returns the total size in bytes of this list. */
+#define LIST_SIZE(type, max) (sizeof(type) * (max))
+
 /* LIST_NEW initializes |list| with memory allocated from |region| to hold
  * |max_elems| of the given |type|. It returns a |tls_result_t| to indicate
  * success or failure. */

@@ -36,7 +36,11 @@ class ScopedBuf {
 
   /* ScopedBuf(size_t) creates a buffer that wraps |len| bytes of newly
    * allocated and zeroed memory. */
-  ScopedBuf(size_t len);
+  explicit ScopedBuf(size_t len);
+
+  /* ScopedBuf() creates a buffer makes and wraps a copy of the data in |bytes|.
+   */
+  explicit ScopedBuf(const std::vector<uint8_t> &bytes);
 
   virtual ~ScopedBuf();
   ScopedBuf &operator=(const ScopedBuf &) = delete;

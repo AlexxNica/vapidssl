@@ -530,4 +530,33 @@ TEST_F(BufDeathTest, CopyBuf) {
   EXPECT_EQ(buf_copy(&buf2, &buf1), 0U);
 }
 
+TEST_F(BufDeathTest, MoveBuf) {
+  BUF buf1 = buf_init();
+  ASSERT_TRUE(buf_malloc(&buf1_, 8, &buf1));
+  memcpy(buf1.raw, "deadbeef", 8);
+  buf1.offset = 2;
+  buf1.length = 4;
+  BUF buf2 = buf_init();
+  ASSERT_TRUE(buf_malloc(&buf1_, 8, &buf2));
+  memcpy(buf2.raw, "feedface", 8);
+  buf2.offset = 3;
+  buf2.length = 5;
+  /* Check null parameters. */
+  EXPECT_ASSERT(buf_move(&buf1, NULL));
+  EXPECT_ASSERT(buf_move(NULL, &buf1));
+  /* Check failure when buf2 is allocated. */
+  EXPECT_ASSERT(buf_move(&buf1, &buf2));
+  buf_free(&buf2);
+  /* Check that buf2 was completely replaced by buf1. */
+  buf_move(&buf1, &buf2);
+  EXPECT_EQ(memcmp(buf2.raw, "deadbeef", 8), 0);
+  EXPECT_EQ(buf_consumed(&buf2), 2U);
+  EXPECT_EQ(buf_ready(&buf2), 2U);
+  EXPECT_EQ(buf_available(&buf2), 4U);
+  EXPECT_EQ(buf_allocated(&buf1_), buf_size(&buf2));
+  EXPECT_EQ(buf_size(&buf1), 0U);
+  buf_free(&buf2);
+  EXPECT_EQ(buf_allocated(&buf1_), 0U);
+}
+
 } /* namespace vapidssl */

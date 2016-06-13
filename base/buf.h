@@ -235,6 +235,12 @@ tls_result_t buf_atou(BUF *buf, uint8_t len, uint32_t *out);
  * available space. */
 size_t buf_copy(const BUF *src, BUF *dst);
 
+/* buf_move moves |src|'s data and state to |dst|.  |dst| must not wrap any
+ * memory. |dst| inherits all aspects of |src|, including its memory region,
+ * offsets, and parent region.  After this call, |src| is unset and doesn't wrap
+ * any memory. */
+void buf_move(BUF *src, BUF *dst);
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

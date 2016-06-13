@@ -31,6 +31,10 @@ ScopedBuf::ScopedBuf(size_t len) : buf_() {
   Reset(len);
 }
 
+ScopedBuf::ScopedBuf(const std::vector<uint8_t> &bytes) : buf_() {
+  Reset(bytes);
+}
+
 ScopedBuf::~ScopedBuf() {
   Reset(0);
 }

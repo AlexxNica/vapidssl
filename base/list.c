@@ -140,7 +140,7 @@ void *list_next(LIST *list, size_t size) {
 
 static void list_is_valid(LIST *list, size_t size) {
   assert(list);
-  assert(list->elem_size == size);
+  assert(list->max_elems == 0 || list->elem_size == size);
   assert(list->iterator <= list->num_elems);
   assert(list->num_elems <= list->max_elems);
 }

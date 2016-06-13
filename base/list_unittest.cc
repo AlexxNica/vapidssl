@@ -21,7 +21,7 @@
 
 #include "base/buf.h"
 #include "base/error.h"
-#include "base/scoped_buf.h"
+#include "base/test/scoped_buf.h"
 #include "public/error.h"
 #include "test/macros.h"
 #include "third_party/gtest/googletest/include/gtest/gtest.h"
@@ -55,7 +55,10 @@ TEST_F(ListDeathTest, NewWithOverflow) {
 }
 
 TEST_F(ListTest, NewWithInsufficentMemory) {
-  EXPECT_FALSE(LIST_NEW(BUF, region_.Get(), max_ + 1, &list_));
+  EXPECT_EQ(LIST_SIZE(uint16_t, 0), 0U);
+  EXPECT_EQ(LIST_SIZE(size_t, 1), sizeof(size_t));
+  region_.Reset(LIST_SIZE(BUF, max_) - 1);
+  EXPECT_FALSE(LIST_NEW(BUF, region_.Get(), max_, &list_));
   EXPECT_ERROR(kTlsErrVapid, kTlsErrOutOfMemory);
 }
 

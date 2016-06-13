@@ -406,6 +406,14 @@ size_t buf_copy(const BUF *src, BUF *dst) {
   return len;
 }
 
+void buf_move(BUF *src, BUF *dst) {
+  assert(buf_allocated(src) == 0);
+  assert(buf_size(dst) == 0);
+  buf_set(buf_get_region(src), buf_start_raw(src), buf_consumed(src),
+          buf_ready(src), buf_size(src), dst);
+  buf_unset(src);
+}
+
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 /* Accessor functions:
  * These functions are allowed to access BUF internals directly. */
