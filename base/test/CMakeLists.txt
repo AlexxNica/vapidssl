@@ -6,7 +6,7 @@ add_library(
 
   OBJECT
 
-  error_test_helper.cc
+  error_helper.cc
   error_listener.cc
   scoped_buf.cc
 )

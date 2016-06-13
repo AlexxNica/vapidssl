@@ -12,8 +12,8 @@
  * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. */
 
-#ifndef VAPIDSSL_BASE_TEST_ERROR_TEST_HELPER_H
-#define VAPIDSSL_BASE_TEST_ERROR_TEST_HELPER_H
+#ifndef VAPIDSSL_BASE_TEST_ERROR_HELPER_H
+#define VAPIDSSL_BASE_TEST_ERROR_HELPER_H
 
 #include <stddef.h>
 #include <stdint.h>
@@ -27,9 +27,9 @@
 
 namespace vapidssl {
 
-/* ErrorTestHelper provides several methods to manage VapidSSL's errors during
+/* ErrorHelper provides several methods to manage VapidSSL's errors during
  * uint testing.  It is not directly used by unit test cases. */
-class ErrorTestHelper {
+class ErrorHelper {
  public:
   /* GetListeners returns a reference to the list of |TestEventListener|s that
    * have been added via |AddListener|. |TestEventListener|s are described in
@@ -40,7 +40,7 @@ class ErrorTestHelper {
    * argument.  Listeners need to be added before |main| is called; thus the
    * proper way to use this method is as a static initializer:
    *    const ::testing::TestEventListener *kSomeListener =
-   *      ErrorTestHelper::AddListener(new SomeTestEventListener); */
+   *      ErrorHelper::AddListener(new SomeTestEventListener); */
   static ::testing::TestEventListener *AddListener(
       ::testing::TestEventListener *listener);
 
@@ -50,14 +50,14 @@ class ErrorTestHelper {
    * called after |InitGoogleTest| but before |RUN_ALL_TESTS|. */
   static void Init(bool verbose);
 
-  /* ErrorTestHelper itself should not be instantiated! */
-  ErrorTestHelper() = delete;
-  ~ErrorTestHelper() = default;
-  ErrorTestHelper &operator=(const ErrorTestHelper &) = delete;
-  ErrorTestHelper(const ErrorTestHelper &) = delete;
+  /* ErrorHelper itself should not be instantiated! */
+  ErrorHelper() = delete;
+  ~ErrorHelper() = default;
+  ErrorHelper &operator=(const ErrorHelper &) = delete;
+  ErrorHelper(const ErrorHelper &) = delete;
 
  private:
-  /* ErrorTestHelper::Environment sets up and tears down the thread-local
+  /* ErrorHelper::Environment sets up and tears down the thread-local
    * error storage as needed. See Google Test's
    * AdvancedGuide.md#global-set-up-and-tear-down*/
   class EnvironmentWithErrors : public ::testing::Environment {
@@ -89,4 +89,4 @@ class ErrorTestHelper {
 
 } /* namespace vapidssl */
 
-#endif /* VAPIDSSL_BASE_TEST_ERROR_TEST_HELPER_H */
+#endif /* VAPIDSSL_BASE_TEST_ERROR_HELPER_H */

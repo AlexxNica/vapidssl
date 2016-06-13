@@ -6,5 +6,5 @@ add_library(
 
   OBJECT
 
-  arch_test_helper_linux.cc
+  arch_helper_linux.cc
 )

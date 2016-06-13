@@ -12,7 +12,7 @@
  * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. */
 
-#include "base/test/error_test_helper.h"
+#include "base/test/error_helper.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -26,33 +26,33 @@
 
 namespace vapidssl {
 
-std::vector<::testing::TestEventListener *> &ErrorTestHelper::GetListeners() {
+std::vector<::testing::TestEventListener *> &ErrorHelper::GetListeners() {
   static std::vector<::testing::TestEventListener *> *listeners_ =
       new std::vector<::testing::TestEventListener *>();
   return *listeners_;
 }
 
-::testing::TestEventListener *ErrorTestHelper::AddListener(
+::testing::TestEventListener *ErrorHelper::AddListener(
     ::testing::TestEventListener *listener) {
   GetListeners().push_back(listener);
   return listener;
 }
 
-void ErrorTestHelper::Init(bool verbose) {
+void ErrorHelper::Init(bool verbose) {
   auto &listeners = ::testing::UnitTest::GetInstance()->listeners();
   if (verbose) {
     auto &extra = GetListeners();
     for (auto i : extra) {
       listeners.Append(i);
     }
-    listeners.Append(new ErrorTestHelper::VapidListener);
+    listeners.Append(new ErrorHelper::VapidListener);
   }
-  listeners.Append(new ErrorTestHelper::UncheckedListener);
+  listeners.Append(new ErrorHelper::UncheckedListener);
   ::testing::AddGlobalTestEnvironment(new EnvironmentWithErrors);
 }
 
-bool ErrorTestHelper::VapidListener::HandleError(tls_error_source_t source,
-                                                 int reason) {
+bool ErrorHelper::VapidListener::HandleError(tls_error_source_t source,
+                                             int reason) {
 /* kErrorStrings is a simple mapping of each tls_error_t value to its symbolic
  * name. */
 #define STRINGIFY_ENUM_VALUE(reason) \
@@ -84,7 +84,7 @@ bool ErrorTestHelper::VapidListener::HandleError(tls_error_source_t source,
   return true;
 }
 
-void ErrorTestHelper::UncheckedListener::OnTestCaseEnd(
+void ErrorHelper::UncheckedListener::OnTestCaseEnd(
     const ::testing::TestCase &test_case) {
   /* This event listener may be called when TLS_ERROR_init has not been called,
    * so we're forced to break the abstraction and check. */
@@ -96,7 +96,7 @@ void ErrorTestHelper::UncheckedListener::OnTestCaseEnd(
   EXPECT_EQ(file, nullptr);
 }
 
-void ErrorTestHelper::EnvironmentWithErrors::SetUp() {
+void ErrorHelper::EnvironmentWithErrors::SetUp() {
   size_t len = 0;
   if (!TLS_ERROR_size(&len)) {
     std::cerr << "Failed to initialize thread local storage!" << std::endl;
@@ -110,7 +110,7 @@ void ErrorTestHelper::EnvironmentWithErrors::SetUp() {
   }
 }
 
-void ErrorTestHelper::EnvironmentWithErrors::TearDown() {
+void ErrorHelper::EnvironmentWithErrors::TearDown() {
   TLS_ERROR_cleanup();
 }
 

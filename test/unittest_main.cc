@@ -12,8 +12,8 @@
  * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. */
 
-#include "base/arch/test/arch_test_helper.h"
-#include "base/test/error_test_helper.h"
+#include "base/arch/test/arch_helper.h"
+#include "base/test/error_helper.h"
 #include "third_party/gtest/googletest/include/gtest/gtest.h"
 
 namespace {
@@ -50,16 +50,16 @@ int main(int argc, char **argv) {
       verbose = true;
     } else if (arg.compare(0, base_dir_len, kBaseDirArg) == 0) {
       std::string base_dir = arg.substr(base_dir_len);
-      has_dir = ::vapidssl::ArchTestHelper::SetBaseDir(base_dir);
+      has_dir = ::vapidssl::ArchHelper::SetBaseDir(base_dir);
     } else {
       std::cerr << "error: Unknown argument: '" << arg << "'." << std::endl;
       print_usage(argv[0]);
     }
   }
-  if (!has_dir && !::vapidssl::ArchTestHelper::SetBaseDir(kDefaultBaseDir)) {
+  if (!has_dir && !::vapidssl::ArchHelper::SetBaseDir(kDefaultBaseDir)) {
     std::cerr << "error: Missing or invalid project root." << std::endl;
     print_usage(argv[0]);
   }
-  ::vapidssl::ErrorTestHelper::Init(verbose);
+  ::vapidssl::ErrorHelper::Init(verbose);
   return RUN_ALL_TESTS();
 }

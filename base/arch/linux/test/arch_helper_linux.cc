@@ -12,7 +12,7 @@
  * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. */
 
-#include "base/arch/test/arch_test_helper.h"
+#include "base/arch/test/arch_helper.h"
 
 #include <string>
 
@@ -20,10 +20,10 @@ namespace vapidssl {
 
 static const std::string kCheckFile = "LICENSE";
 
-std::string ArchTestHelper::base_dir_("");
+std::string ArchHelper::base_dir_("");
 
-bool ArchTestHelper::SetBaseDir(const std::string &base_dir) {
-  if (!ArchTestHelper::base_dir_.empty()) {
+bool ArchHelper::SetBaseDir(const std::string &base_dir) {
+  if (!ArchHelper::base_dir_.empty()) {
     return false;
   }
   std::string new_base(base_dir);
@@ -39,18 +39,19 @@ bool ArchTestHelper::SetBaseDir(const std::string &base_dir) {
   return true;
 }
 
-bool ArchTestHelper::SetDataFile(const std::string &path) {
+bool ArchHelper::SetDataFile(const std::string &path) {
   std::string new_path = base_dir_ + path;
   struct stat buf;
   if (stat(new_path.c_str(), &buf) != 0) {
+    ADD_FAILURE() << "Test data file '" << path << "' was not found.";
     return false;
   }
   path_ = new_path;
   return true;
 }
 
-bool ArchTestHelper::ArchListener::HandleError(tls_error_source_t source,
-                                               int reason) {
+bool ArchHelper::ArchListener::HandleError(tls_error_source_t source,
+                                           int reason) {
   if (source != kTlsErrArch || reason == 0) {
     return false;
   }

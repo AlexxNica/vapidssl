@@ -12,8 +12,8 @@
  * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. */
 
-#ifndef VAPIDSSL_BASE_ARCH_TEST_ARCH_TEST_HELPER_H
-#define VAPIDSSL_BASE_ARCH_TEST_ARCH_TEST_HELPER_H
+#ifndef VAPIDSSL_BASE_ARCH_TEST_ARCH_HELPER_H
+#define VAPIDSSL_BASE_ARCH_TEST_ARCH_HELPER_H
 
 #include <stdint.h>
 #include <map>
@@ -21,8 +21,8 @@
 #include <string>
 
 #include "base/buf.h"
+#include "base/test/error_helper.h"
 #include "base/test/error_listener.h"
-#include "base/test/error_test_helper.h"
 #include "base/test/scoped_buf.h"
 #include "public/error.h"
 #include "third_party/boringssl/crypto/test/file_test.h"
@@ -30,15 +30,15 @@
 
 namespace vapidssl {
 
-/* ArchTestHelper provides a platform-specific way to get test data from test
+/* ArchHelper provides a platform-specific way to get test data from test
  * data files.  Once |main| has set the project root using |SetBaseDir|,
  * individual unit tests can specify test data files using |SetDataFile| and
  * register named buffers as "attributes" using |AddAttribute|.  Each subsequent
  * call to |ReadNext| will then populate the buffer with a corresponding value
  * from the file. */
-class ArchTestHelper {
+class ArchHelper {
  public:
-  /* RegisterListener adds a test event listener to |ErrorTestHelper|'s list and
+  /* RegisterListener adds a test event listener to |ErrorHelper|'s list and
    * returns for assignment in a static initailizer. */
   static ::testing::TestEventListener *RegisterListener();
 
@@ -47,10 +47,10 @@ class ArchTestHelper {
    * without modification; otherwise, it returns true. */
   static bool SetBaseDir(const std::string &base_dir);
 
-  ArchTestHelper();
-  virtual ~ArchTestHelper();
-  ArchTestHelper &operator=(const ArchTestHelper &) = delete;
-  ArchTestHelper(const ArchTestHelper &) = delete;
+  ArchHelper();
+  virtual ~ArchHelper();
+  ArchHelper &operator=(const ArchHelper &) = delete;
+  ArchHelper(const ArchHelper &) = delete;
 
   /* SetDataFile takes a path, |path|, that gives the location of this test's
    * test data file relative to the project root. If |path_| is already set or
@@ -92,4 +92,4 @@ class ArchTestHelper {
 
 } /* namespace vapidssl */
 
-#endif /* VAPIDSSL_BASE_ARCH_TEST_ARCH_TEST_HELPER_H */
+#endif /* VAPIDSSL_BASE_ARCH_TEST_ARCH_HELPER_H */

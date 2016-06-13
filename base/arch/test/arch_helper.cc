@@ -12,7 +12,7 @@
  * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. */
 
-#include "base/arch/test/arch_test_helper.h"
+#include "base/arch/test/arch_helper.h"
 
 #include <stdint.h>
 #include <iostream>
@@ -25,17 +25,17 @@
 namespace vapidssl {
 
 static const ::testing::TestEventListener *kErrorListener =
-    ArchTestHelper::RegisterListener();
+    ArchHelper::RegisterListener();
 
-::testing::TestEventListener *ArchTestHelper::RegisterListener() {
-  return ErrorTestHelper::AddListener(new ArchTestHelper::ArchListener());
+::testing::TestEventListener *ArchHelper::RegisterListener() {
+  return ErrorHelper::AddListener(new ArchHelper::ArchListener());
 }
 
-ArchTestHelper::ArchTestHelper() : attributes_(), path_("") {}
+ArchHelper::ArchHelper() : attributes_(), path_("") {}
 
-ArchTestHelper::~ArchTestHelper() {}
+ArchHelper::~ArchHelper() {}
 
-void ArchTestHelper::AddAttribute(const std::string &tag, ScopedBuf &buf) {
+void ArchHelper::AddAttribute(const std::string &tag, ScopedBuf &buf) {
   if (attributes_[tag]) {
     std::cerr << "Duplicate attribute added!" << std::endl;
     abort();
@@ -43,7 +43,7 @@ void ArchTestHelper::AddAttribute(const std::string &tag, ScopedBuf &buf) {
   attributes_[tag] = &buf;
 }
 
-bool ArchTestHelper::ReadNext() {
+bool ArchHelper::ReadNext() {
   return false;
 }
 

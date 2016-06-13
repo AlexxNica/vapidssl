@@ -10,5 +10,5 @@ add_library(
   ../thread_none.c
 #  io_mock.c
   random_fake.c
-  arch_test_helper.cc
+  arch_helper.cc
 )
