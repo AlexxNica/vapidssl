@@ -1,16 +1,16 @@
-/* Copyright (c) 2016, Google Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
- * SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION
- * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
- * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. */
+// Copyright 2016 The Fuchsia Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 
 #include "base/list.h"
 #include "base/list_internal.h"
@@ -23,30 +23,29 @@
 #include "base/types.h"
 #include "public/error.h"
 
-/* Forward declarations. */
+// Forward declarations.
 
-/* list_is_valid asserts several invariants about a LIST structure, such as
- * |iterator| <= |num_elems| <= |max_elems| and |size| == |elem_size|. */
+// list_is_valid asserts several invariants about a LIST structure, such as
+// |iterator| <= |num_elems| <= |max_elems| and |size| == |elem_size|.
 static void list_is_valid(LIST *list, size_t size);
-/* list_at returns a pointer to the element at the given |index|.  |index| must
- * be within |max_elems|, but does not have to be within |num_elems|. */
+// list_at returns a pointer to the element at the given |index|.  |index| must
+// be within |max_elems|, but does not have to be within |num_elems|.
 static void *list_at(LIST *list, size_t index);
 
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-/* Library routines. */
+// Library routines.
 
 tls_result_t list_new(BUF *region, size_t elem_size, uint8_t max_elems,
                       LIST *out) {
   assert(out);
   size_t size = elem_size * max_elems;
   assert(size != 0);
-  assert(size / elem_size == max_elems); /* Overflow. */
+  assert(size / elem_size == max_elems);  // Overflow.
   BUF tmp = buf_init();
   if (!buf_malloc(region, size, &tmp)) {
     return kTlsFailure;
   }
   out->elem_size = elem_size;
-  out->elems = buf_as(&tmp, size); /* Special exception to BUF_AS rule. */
+  out->elems = buf_as(&tmp, size);  // Special exception to BUF_AS rule.
   out->iterator = 0;
   out->num_elems = 0;
   out->max_elems = max_elems;
@@ -135,8 +134,7 @@ void *list_next(LIST *list, size_t size) {
   return list_iter(list, size);
 }
 
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-/* Static functions. */
+// Static functions.
 
 static void list_is_valid(LIST *list, size_t size) {
   assert(list);
@@ -147,8 +145,8 @@ static void list_is_valid(LIST *list, size_t size) {
 
 static void *list_at(LIST *list, size_t index) {
   assert(index < list->max_elems);
-  /* No overflow: |index| is less than |num_elems|, |num_elems| is less than
-   * |max_elems|, and (|max_elems|*|elem_size|) was checked against overflow in
-   * |list_init|. */
+  // No overflow: |index| is less than |num_elems|, |num_elems| is less than
+  // |max_elems|, and (|max_elems|*|elem_size|) was checked against overflow in
+  // |list_init|. */
   return list->elems + (index * list->elem_size);
 }

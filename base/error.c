@@ -1,16 +1,16 @@
-/* Copyright (c) 2016, Google Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
- * SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION
- * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
- * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. */
+// Copyright 2016 The Fuchsia Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 
 #include "base/error.h"
 
@@ -21,20 +21,20 @@
 #include "base/arch/thread.h"
 #include "public/error.h"
 
-/* error_st represents an error, combining both an informational code as well as
- * information about where the error occurred. */
+// error_st represents an error, combining both an informational code as well as
+// information about where the error occurred.
 struct error_st {
-  /* The __FILE__ where this error was generated. */
+  // The __FILE__ where this error was generated.
   const char *file;
-  /* The __LINE__ where this error was generated. */
+  // The __LINE__ where this error was generated.
   int line;
-  /* The code where this error was generated. */
+  // The code where this error was generated.
   tls_error_source_t source;
-  /* The specific error code for this error. */
+  // The specific error code for this error.
   int reason;
 };
 
-/* Public functions */
+// Public functions
 
 tls_result_t TLS_ERROR_size(size_t *out) {
   if (!out) {
@@ -57,7 +57,7 @@ tls_result_t TLS_ERROR_init(void *mem, size_t len) {
 tls_result_t TLS_ERROR_get(tls_error_source_t *out_source, int *out_reason,
                            const char **out_file, int *out_line) {
   struct error_st *local = thread_get_local();
-  assert(local); /* Fail hard in debug mode if errors uninitialized. */
+  assert(local);  // Fail hard in debug mode if errors uninitialized.
   if (!local) {
     return kTlsFailure;
   }
@@ -78,7 +78,7 @@ tls_result_t TLS_ERROR_get(tls_error_source_t *out_source, int *out_reason,
 
 tls_result_t TLS_ERROR_test(tls_error_source_t source, int reason) {
   struct error_st *local = thread_get_local();
-  assert(local); /* Fail hard in debug mode if errors uninitialized. */
+  assert(local);  // Fail hard in debug mode if errors uninitialized.
   if (!local || local->source != source || local->reason != reason) {
     return kTlsFailure;
   }
@@ -94,16 +94,16 @@ void *TLS_ERROR_cleanup(void) {
   return mem;
 }
 
-/* Library routines */
+// Library routines
 
 tls_result_t error_set(const char *file, int line, tls_error_source_t source,
                        int reason) {
   struct error_st *local = thread_get_local();
-  /* This function MUST NOT be called before |TLS_ERROR_init|.  This constraint
-   * is satisfied by having every |TLS_CONFIG_*| and |TLS_*| API check that
-   * |error_clear| succeeds before proceeding.  If somehow we get here and the
-   * constraint is not met, we assume there's been a memory corruption and
-   * choose to die an ugly death. */
+  // This function MUST NOT be called before |TLS_ERROR_init|.  This constraint
+  // is satisfied by having every |TLS_CONFIG_*| and |TLS_*| API check that
+  // |error_clear| succeeds before proceeding.  If somehow we get here and the
+  // constraint is not met, we assume there's been a memory corruption and
+  // choose to die an ugly death. */
   assert(local);
   if (!local) {
     abort();

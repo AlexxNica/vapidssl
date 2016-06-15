@@ -1,17 +1,16 @@
-/* Copyright (c) 2016, Google Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
- * SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION
- * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
- * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. */
-
+// Copyright 2016 The Fuchsia Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 
 #include "base/list.h"
 #include "base/list_internal.h"
@@ -36,21 +35,21 @@ class ListTest : public ::testing::Test {
     region_.Reset(sizeof(BUF) * max_);
   }
 
-  /* region_ wraps the memory that other BUFs will be allocated from. */
+  // region_ wraps the memory that other BUFs will be allocated from.
   ScopedBuf region_;
-  /* list_ represents the data under test. */
+  // list_ represents the data under test.
   LIST list_;
-  /* max_ is the maximum number of elements in |list_|. */
+  // max_ is the maximum number of elements in |list_|.
   size_t max_;
-  /* ignored_ is used to suppress warnings caused by |LIST_*| return values
-   * being ignored when in an |EXPECT_ASSERT|. */
+  // ignored_ is used to suppress warnings caused by |LIST_*| return values
+  // being ignored when in an |EXPECT_ASSERT|. */
   void *ignored_;
 };
 
 typedef ListTest ListDeathTest;
 
 TEST_F(ListDeathTest, NewWithOverflow) {
-  /* Bypass macro to fake a huge elem_size. */
+  // Bypass macro to fake a huge elem_size.
   EXPECT_ASSERT(list_new(region_.Get(), (size_t)-1, 0xFF, &list_));
 }
 
@@ -197,13 +196,13 @@ TEST_F(ListTest, AddAndDelete) {
   size_t j = 0;
   size_t k = 0;
   size_t l = 0;
-  /* Add to front. */
+  // Add to front.
   for (size_t i = 0; i < max_; ++i) {
     val = LIST_ADD_FRONT(size_t, &list_);
     *val = j++;
   }
   EXPECT_EQ(LIST_LEN(size_t, &list_), max_);
-  /* Sequence should be decreasing. */
+  // Sequence should be decreasing.
   l = k = j;
   val = LIST_BEGIN(size_t, &list_);
   for (size_t i = 0; i < max_; ++i) {
@@ -212,12 +211,12 @@ TEST_F(ListTest, AddAndDelete) {
     EXPECT_EQ(*val, k);
     val = LIST_NEXT(size_t, &list_);
   }
-  /* Delete from back. */
+  // Delete from back.
   for (size_t i = 0; i < max_ / 2; ++i) {
     LIST_DEL(size_t, &list_);
   }
   EXPECT_EQ(LIST_LEN(size_t, &list_), max_ / 2);
-  /* Sequence should be truncated and decreasing. */
+  // Sequence should be truncated and decreasing.
   k = l;
   val = LIST_BEGIN(size_t, &list_);
   for (size_t i = 0; i < max_ / 2; ++i) {
@@ -227,13 +226,13 @@ TEST_F(ListTest, AddAndDelete) {
     val = LIST_NEXT(size_t, &list_);
   }
   EXPECT_EQ(LIST_NEXT(size_t, &list_), nullptr);
-  /* Add to back. */
+  // Add to back.
   for (size_t i = 0; i < max_ / 2; ++i) {
     val = LIST_ADD(size_t, &list_);
     *val = j++;
   }
   EXPECT_EQ(LIST_LEN(size_t, &list_), max_);
-  /* Sequence should be in half decreasing, half increasing. */
+  // Sequence should be in half decreasing, half increasing.
   k = l;
   val = LIST_BEGIN(size_t, &list_);
   for (size_t i = 0; i < max_ / 2; ++i) {
@@ -249,12 +248,12 @@ TEST_F(ListTest, AddAndDelete) {
     k++;
     val = LIST_NEXT(size_t, &list_);
   }
-  /* Delete from front. */
+  // Delete from front.
   for (size_t i = 0; i < max_ / 2; ++i) {
     LIST_DEL_FRONT(size_t, &list_);
   }
   EXPECT_EQ(LIST_LEN(size_t, &list_), max_ / 2);
-  /* Sequence should be increasing. */
+  // Sequence should be increasing.
   k = l;
   val = LIST_BEGIN(size_t, &list_);
   for (size_t i = 0; i < max_ / 2; ++i) {
@@ -301,5 +300,4 @@ TEST_F(ListTest, SwapDistinct) {
   EXPECT_EQ(*val, 1U);
 }
 
-
-} /* namespace vapidssl */
+}  // namespace vapidssl

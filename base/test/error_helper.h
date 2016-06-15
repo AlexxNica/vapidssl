@@ -1,16 +1,16 @@
-/* Copyright (c) 2016, Google Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
- * SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION
- * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
- * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. */
+// Copyright 2016 The Fuchsia Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 
 #ifndef VAPIDSSL_BASE_TEST_ERROR_HELPER_H
 #define VAPIDSSL_BASE_TEST_ERROR_HELPER_H
@@ -27,66 +27,66 @@
 
 namespace vapidssl {
 
-/* ErrorHelper provides several methods to manage VapidSSL's errors during
- * uint testing.  It is not directly used by unit test cases. */
+// ErrorHelper provides several methods to manage VapidSSL's errors during uint
+// testing.  It is not directly used by unit test cases.
 class ErrorHelper {
  public:
-  /* GetListeners returns a reference to the list of |TestEventListener|s that
-   * have been added via |AddListener|. |TestEventListener|s are described in
-   * AdvancedGuide.md#extending-google-test-by-handling-test-events. */
+  // GetListeners returns a reference to the list of |TestEventListener|s that
+  // have been added via |AddListener|. |TestEventListener|s are described in
+  // AdvancedGuide.md#extending-google-test-by-handling-test-events.
   static std::vector<::testing::TestEventListener *> &GetListeners();
 
-  /* AddListener adds a |TestEventListener| to the static list then returns its
-   * argument.  Listeners need to be added before |main| is called; thus the
-   * proper way to use this method is as a static initializer:
-   *    const ::testing::TestEventListener *kSomeListener =
-   *      ErrorHelper::AddListener(new SomeTestEventListener); */
+  // AddListener adds a |TestEventListener| to the static list then returns its
+  // argument.  Listeners need to be added before |main| is called; thus the
+  // proper way to use this method is as a static initializer:    const
+  // ::testing::TestEventListener *kSomeListener =
+  // ErrorHelper::AddListener(new SomeTestEventListener); */
   static ::testing::TestEventListener *AddListener(
       ::testing::TestEventListener *listener);
 
-  /* Init registers the listeners and configures an |EnvironmentWithErrors|.  If
-   * |verbose| is true, it will register all listeners added with |AddListener|,
-   * otherwise it will only register |kUncheckedListener|.  This method must be
-   * called after |InitGoogleTest| but before |RUN_ALL_TESTS|. */
+  // Init registers the listeners and configures an |EnvironmentWithErrors|.  If
+  // |verbose| is true, it will register all listeners added with |AddListener|,
+  // otherwise it will only register |kUncheckedListener|.  This method must be
+  // called after |InitGoogleTest| but before |RUN_ALL_TESTS|.
   static void Init(bool verbose);
 
-  /* ErrorHelper itself should not be instantiated! */
+  // ErrorHelper itself should not be instantiated!
   ErrorHelper() = delete;
   ~ErrorHelper() = default;
   ErrorHelper &operator=(const ErrorHelper &) = delete;
   ErrorHelper(const ErrorHelper &) = delete;
 
  private:
-  /* ErrorHelper::Environment sets up and tears down the thread-local
-   * error storage as needed. See Google Test's
-   * AdvancedGuide.md#global-set-up-and-tear-down*/
+  // ErrorHelper::Environment sets up and tears down the thread-local error
+  // storage as needed. See Google Test's
+  // AdvancedGuide.md#global-set-up-and-tear-down
   class EnvironmentWithErrors : public ::testing::Environment {
    protected:
     void SetUp() override;
     void TearDown() override;
 
    private:
-    /* err_ wraps the memory allocated by |SetUp|. */
+    // err_ wraps the memory allocated by |SetUp|.
     std::unique_ptr<uint8_t[]> err_;
   };
 
   class VapidListener : public ErrorListener {
    protected:
-    /* HandleError implements |ErrorListener::HandleError|, and handles
-     * VapidSSL errors. */
+    // HandleError implements |ErrorListener::HandleError|, and handles VapidSSL
+    // errors.
     bool HandleError(tls_error_source_t source, int reason) override;
   };
 
   class UncheckedListener : public ::testing::EmptyTestEventListener {
    protected:
-    /* OnTestCaseEnd is called after each test case completes and fails if
-     * VapidSSL indicates an error.  Expected errors should be automatically
-     * checked and cleared using |EXPECT_ERROR| and |ASSERT_ERROR| from
-     * test/macros.h. */
+    // OnTestCaseEnd is called after each test case completes and fails if
+    // VapidSSL indicates an error.  Expected errors should be automatically
+    // checked and cleared using |EXPECT_ERROR| and |ASSERT_ERROR| from
+    // test/macros.h.
     void OnTestCaseEnd(const ::testing::TestCase &test_case) override;
   };
 };
 
-} /* namespace vapidssl */
+}  // namespace vapidssl
 
-#endif /* VAPIDSSL_BASE_TEST_ERROR_HELPER_H */
+#endif  // VAPIDSSL_BASE_TEST_ERROR_HELPER_H

@@ -1,16 +1,16 @@
-/* Copyright (c) 2016, Google Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
- * SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION
- * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
- * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. */
+// Copyright 2016 The Fuchsia Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 
 #include "base/test/error_helper.h"
 
@@ -53,12 +53,12 @@ void ErrorHelper::Init(bool verbose) {
 
 bool ErrorHelper::VapidListener::HandleError(tls_error_source_t source,
                                              int reason) {
-/* kErrorStrings is a simple mapping of each tls_error_t value to its symbolic
- * name. */
+// kErrorStrings is a simple mapping of each tls_error_t value to its symbolic
+// name.
 #define STRINGIFY_ENUM_VALUE(reason) \
   { reason, #reason }
   static const std::map<int, std::string> kErrorStrings = {
-      /* VapidSSL errors. */
+      // VapidSSL errors.
       STRINGIFY_ENUM_VALUE(kTlsErrBadAlert),
       STRINGIFY_ENUM_VALUE(kTlsErrTooManyEmptyChunks),
       STRINGIFY_ENUM_VALUE(kTlsErrDisconnected),
@@ -86,8 +86,8 @@ bool ErrorHelper::VapidListener::HandleError(tls_error_source_t source,
 
 void ErrorHelper::UncheckedListener::OnTestCaseEnd(
     const ::testing::TestCase &test_case) {
-  /* This event listener may be called when TLS_ERROR_init has not been called,
-   * so we're forced to break the abstraction and check. */
+  // This event listener may be called when TLS_ERROR_init has not been called,
+  // so we're forced to break the abstraction and check.
   if (!thread_get_local()) {
     return;
   }
@@ -114,4 +114,4 @@ void ErrorHelper::EnvironmentWithErrors::TearDown() {
   TLS_ERROR_cleanup();
 }
 
-} /* namespace vapidssl */
+}  // namespace vapidssl

@@ -1,16 +1,16 @@
-/* Copyright (c) 2016, Google Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
- * SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION
- * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
- * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. */
+// Copyright (c) 2016, Google Inc.
+//
+// Permission to use, copy, modify, and/or distribute this software for any
+// purpose with or without fee is hereby granted, provided that the above
+// copyright notice and this permission notice appear in all copies.
+//
+// THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+// REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+// AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+// INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+// LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+// OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+// PERFORMANCE OF THIS SOFTWARE.
 
 #include "base/buf.h"
 
@@ -22,73 +22,70 @@
 #include "base/error.h"
 #include "public/error.h"
 
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-/* Forward declarations:
- *  The ONLY functions allowed to directly access the fields of a |BUF| are
- * these static functions and the accessors |buf_consumed|, |buf_ready|,
- * |buf_available|, and |buf_size|.  All other methods do not touch BUFs
- * directly, but access them through these functions. */
+// Forward declarations:  The ONLY functions allowed to directly access the
+// fields of a |BUF| are these static functions and the accessors
+// |buf_consumed|, |buf_ready|, |buf_available|, and |buf_size|.  All other
+// methods do not touch BUFs directly, but access them through these functions.
 
-/* buf_is_valid checks conditions which should be invariant, including whether
- * |buf| is NULL, whether it proper wraps memory, and whether it's consumed,
- * ready, and available regions are consistent with its overall length. */
+// buf_is_valid checks conditions which should be invariant, including whether
+// |buf| is NULL, whether it proper wraps memory, and whether it's consumed,
+// ready, and available regions are consistent with its overall length.
 static void buf_is_valid(const BUF *buf);
 
-/* buf_wraps checks if the given |buf| wraps the memory specified by |region|
- * and |len| and returns |kTrue| if it does, |kFalse| otherwise. It can also be
- * used to check if |buf| is unwrapped by calling "buf_wraps(NULL, 0)". */
+// buf_wraps checks if the given |buf| wraps the memory specified by |region|
+// and |len| and returns |kTrue| if it does, |kFalse| otherwise. It can also be
+// used to check if |buf| is unwrapped by calling "buf_wraps(NULL, 0)".
 static bool_t buf_wraps(const BUF *buf, const void *mem, size_t len);
 
-/* buf_get_region returns the memory BUF that either allocated |buf| or that
- * allocated the BUF that |buf| was split was split from. This value will be
- * NULL for BUFs that directly wrap memory. */
+// buf_get_region returns the memory BUF that either allocated |buf| or that
+// allocated the BUF that |buf| was split was split from. This value will be
+// NULL for BUFs that directly wrap memory.
 static BUF *buf_get_region(const BUF *buf);
 
-/* buf_start_raw returns a pointer to the beginning of |buf|'s raw memory. */
+// buf_start_raw returns a pointer to the beginning of |buf|'s raw memory.
 static uint8_t *buf_start_raw(const BUF *buf);
 
-/* buf_ready_raw returns a pointer to |buf|'s ready data. */
+// buf_ready_raw returns a pointer to |buf|'s ready data.
 static uint8_t *buf_ready_raw(const BUF *buf);
 
-/* buf_avail_raw returns a pointer to |buf|'s available space. */
+// buf_avail_raw returns a pointer to |buf|'s available space.
 static uint8_t *buf_avail_raw(const BUF *buf);
 
-/* buf_alloc_raw returns a pointer to |buf|'s next allocatable space. */
+// buf_alloc_raw returns a pointer to |buf|'s next allocatable space.
 static uint8_t *buf_alloc_raw(const BUF *buf);
 
-/* buf_final_raw returns a pointer to the end of |buf|'s raw memory. */
+// buf_final_raw returns a pointer to the end of |buf|'s raw memory.
 static uint8_t *buf_final_raw(const BUF *buf);
 
-/* buf_increment_consumed increases the consumed data in |buf| by |num|. This
- * has the side effect of decreasing the amount of ready data. */
+// buf_increment_consumed increases the consumed data in |buf| by |num|. This
+// has the side effect of decreasing the amount of ready data.
 static void buf_increment_consumed(BUF *buf, size_t num);
 
-/* buf_increment_allocated increases the space allocated to other buffers from
- * |buf| by |num|. */
+// buf_increment_allocated increases the space allocated to other buffers from
+// |buf| by |num|.
 static void buf_increment_allocated(BUF *buf, size_t num);
 
-/* buf_increment_allocated decreases the space allocated to other buffers from
- * |buf| by |num|. */
+// buf_increment_allocated decreases the space allocated to other buffers from
+// |buf| by |num|.
 static void buf_decrement_allocated(BUF *buf, size_t num);
 
-/* buf_increment_ready increases the ready data in |buf| by |num|. This has the
- * side effect of decreasing the available space. */
+// buf_increment_ready increases the ready data in |buf| by |num|. This has the
+// side effect of decreasing the available space.
 static void buf_increment_ready(BUF *buf, size_t num);
 
-/* buf_set overwrites any existing values in |out| and replaces them with
- * |region|, |raw|, |offset|, |length|, and |size|. This function does not relay
- * on calls to |assert| to enforce its constraints.  It includes explicit checks
- * and a call to |abort| to ensure it dies upon detecting a memory corruption
- * even when asserts have been disabled. */
+// buf_set overwrites any existing values in |out| and replaces them with
+// |region|, |raw|, |offset|, |length|, and |size|. This function does not relay
+// on calls to |assert| to enforce its constraints.  It includes explicit checks
+// and a call to |abort| to ensure it dies upon detecting a memory corruption
+// even when asserts have been disabled.
 static void buf_set(BUF *region, uint8_t *raw, size_t consumed, size_t ready,
                     size_t size, BUF *out);
 
-/* buf_unset is an alias for buf_set(NULL, NULL, 0, 0, 0, buf). */
+// buf_unset is an alias for buf_set(NULL, NULL, 0, 0, 0, buf).
 static void buf_unset(BUF *buf);
 
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-/* Library routines:
- * These functions are NOT allowed to access BUF internals directly. */
+// Library routines: These functions are NOT allowed to access BUF internals
+// directly.
 BUF buf_init(void) {
   BUF empty = {
       NULL, NULL, 0, 0, 0, 0,
@@ -195,24 +192,24 @@ void buf_merge(BUF *in, BUF *out) {
   assert(buf_allocated(a) == 0);
   assert(buf_allocated(b) == 0);
   assert(buf_final_raw(a) == buf_start_raw(b));
-  /* This shifts the data in |a| to the beginning of |a->raw|, then rewraps |b|
-   * around both |a|'s available space and |b|'s memory. */
+  // This shifts the data in |a| to the beginning of |a->raw|, then rewraps |b|
+  // around both |a|'s available space and |b|'s memory.
   buf_recycle(a);
   uint8_t *raw = buf_avail_raw(a);
-  /* These lines can't overflow because:
-   * 1. buf_consumed, buf_ready, and buf_available are bounded by buf_size
-   * 2. |a| and |b| form a memory region of length buf_size(a) + buf_size(b)
-   * 3. size_t is big enough to hold the length of any memory region. */
+  // These lines can't overflow because: 1. buf_consumed, buf_ready, and
+  // buf_available are bounded by buf_size 2. |a| and |b| form a memory region
+  // of length buf_size(a) + buf_size(b) 3. size_t is big enough to hold the
+  // length of any memory region.
   size_t consumed = buf_available(a) + buf_consumed(b);
   size_t ready = buf_ready(b);
   size_t size = buf_available(a) + buf_size(b);
   buf_set(region, raw, consumed, ready, size, b);
-  /* It then shifts the data in |b| forward (next to the data in |a|) and
-   * finally combines the BUFs. */
+  // It then shifts the data in |b| forward (next to the data in |a|) and
+  // finally combines the BUFs.
   buf_recycle(b);
   raw = buf_start_raw(a);
-  /* These lines can't overflow for the same reasons as above, except that
-   * buf_ready(a) <= buf_size(a) and buf_ready(b) <= buf_size(b). */
+  // These lines can't overflow for the same reasons as above, except that
+  // buf_ready(a) <= buf_size(a) and buf_ready(b) <= buf_size(b).
   consumed = 0;
   ready = buf_ready(a) + buf_ready(b);
   size = buf_ready(a) + buf_size(b);
@@ -375,7 +372,7 @@ tls_result_t buf_counter(BUF *buf) {
 
 tls_result_t buf_atou(BUF *buf, uint8_t len, uint32_t *out) {
   assert(out);
-  /* 1-9 digits prevents overflowing uint32_t. */
+  // 1-9 digits prevents overflowing uint32_t.
   assert(0 < len && len < 10);
   uint32_t val = 0;
   uint32_t digit;
@@ -414,9 +411,8 @@ void buf_move(BUF *src, BUF *dst) {
   buf_unset(src);
 }
 
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-/* Accessor functions:
- * These functions are allowed to access BUF internals directly. */
+// Accessor functions: These functions are allowed to access BUF internals
+// directly.
 size_t buf_size(const BUF *buf) {
   buf_is_valid(buf);
   return buf->max;
@@ -450,9 +446,8 @@ uint8_t *buf_as(BUF *buf, size_t min) {
   return out;
 }
 
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-/* Static functions:
- * These functions are allowed to access BUF internals directly. */
+// Static functions: These functions are allowed to access BUF internals
+// directly.
 static void buf_is_valid(const BUF *buf) {
   assert(buf);
   assert((!buf->raw && buf->max == 0) || (buf->raw && buf->max != 0));
@@ -529,10 +524,10 @@ static void buf_increment_ready(BUF *buf, size_t num) {
 
 static void buf_set(BUF *region, uint8_t *raw, size_t consumed, size_t ready,
                     size_t size, BUF *out) {
-  /* These are broken into separate conditions to make debugging easier.  The
-   * |assert|s are to ensure traceability during unit testing, while the
-   * |abort|s are to ensure we die at runtime in the event of memory corruption.
-   */
+  // These are broken into separate conditions to make debugging easier.  The
+  // |assert|s are to ensure traceability during unit testing, while the
+  // |abort|s are to ensure we die at runtime in the event of memory
+  // corruption./
   assert(out);
   if (!out) {
     abort();
