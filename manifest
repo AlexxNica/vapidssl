@@ -8,12 +8,12 @@
              githooks="manifest/git-hooks"/>
     <project name="BoringSSL"
              remote="https://boringssl.googlesource.com/boringssl"
-             revision="bbd43b5e90c073a3c8b719d538a273fe683b9944"
+             revision="0af8240d4eaeddc18a3b83c70b7b59137392d17e"
              path="vapidssl/third_party/boringssl"
              githooks="manifest/git-hooks"/>
     <project name="Googletest"
              remote="https://github.com/google/googletest.git"
-             revision="d225acc90bc3a8c420a9bcd1f033033c1ccd7fe0"
+             revision="ec44c6c1675c25b9827aacd08c02433cccde7780"
              path="vapidssl/third_party/gtest"
              githooks="manifest/git-hooks"/>
   </projects>
