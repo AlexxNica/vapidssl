@@ -19,8 +19,8 @@
 #include <iostream>
 #include <vector>
 
-#include "base/arch/thread.h"
 #include "base/error.h"
+#include "base/platform/thread.h"
 #include "public/error.h"
 #include "third_party/gtest/googletest/include/gtest/gtest.h"
 

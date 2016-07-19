@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "base/arch/test/arch_helper.h"
+#include "base/platform/test/platform_helper.h"
 
 #include <string>
 
@@ -20,10 +20,10 @@ namespace vapidssl {
 
 static const std::string kCheckFile = "LICENSE";
 
-std::string ArchHelper::base_dir_("");
+std::string PlatformHelper::base_dir_("");
 
-bool ArchHelper::SetBaseDir(const std::string &base_dir) {
-  if (!ArchHelper::base_dir_.empty()) {
+bool PlatformHelper::SetBaseDir(const std::string &base_dir) {
+  if (!PlatformHelper::base_dir_.empty()) {
     return false;
   }
   std::string new_base(base_dir);
@@ -39,7 +39,7 @@ bool ArchHelper::SetBaseDir(const std::string &base_dir) {
   return true;
 }
 
-bool ArchHelper::SetDataFile(const std::string &path) {
+bool PlatformHelper::SetDataFile(const std::string &path) {
   std::string new_path = base_dir_ + path;
   struct stat buf;
   if (stat(new_path.c_str(), &buf) != 0) {
@@ -50,9 +50,9 @@ bool ArchHelper::SetDataFile(const std::string &path) {
   return true;
 }
 
-bool ArchHelper::ArchListener::HandleError(tls_error_source_t source,
-                                           int reason) {
-  if (source != kTlsErrArch || reason == 0) {
+bool PlatformHelper::PlatformListener::HandleError(tls_error_source_t source,
+                                                   int reason) {
+  if (source != kTlsErrPlatform || reason == 0) {
     return false;
   }
   std::cout << "  Source: Linux OS" << std::endl;

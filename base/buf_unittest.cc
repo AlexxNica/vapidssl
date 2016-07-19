@@ -18,7 +18,7 @@
 #include <stdlib.h>
 #include <memory>
 
-#include "base/arch/random.h"
+#include "base/platform/random.h"
 #include "public/error.h"
 #include "test/macros.h"
 #include "third_party/gtest/googletest/include/gtest/gtest.h"

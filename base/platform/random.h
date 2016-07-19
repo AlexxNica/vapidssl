@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef VAPIDSSL_BASE_ARCH_RANDOM_H
-#define VAPIDSSL_BASE_ARCH_RANDOM_H
+#ifndef VAPIDSSL_BASE_PLATFORM_RANDOM_H
+#define VAPIDSSL_BASE_PLATFORM_RANDOM_H
 #ifdef __cplusplus
 extern "C" {
 #endif  // __cplusplus
@@ -34,4 +34,4 @@ void random_buf(BUF *out);
 #if defined(__cplusplus)
 }
 #endif  // __cplusplus
-#endif  // VAPIDSSL_BASE_ARCH_RANDOM_H
+#endif  // VAPIDSSL_BASE_PLATFORM_RANDOM_H

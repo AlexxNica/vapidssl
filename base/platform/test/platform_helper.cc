@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "base/arch/test/arch_helper.h"
+#include "base/platform/test/platform_helper.h"
 
 #include <stdint.h>
 #include <iostream>
@@ -25,17 +25,17 @@
 namespace vapidssl {
 
 static const ::testing::TestEventListener *kErrorListener =
-    ArchHelper::RegisterListener();
+    PlatformHelper::RegisterListener();
 
-::testing::TestEventListener *ArchHelper::RegisterListener() {
-  return ErrorHelper::AddListener(new ArchHelper::ArchListener());
+::testing::TestEventListener *PlatformHelper::RegisterListener() {
+  return ErrorHelper::AddListener(new PlatformHelper::PlatformListener());
 }
 
-ArchHelper::ArchHelper() : attributes_(), path_("") {}
+PlatformHelper::PlatformHelper() : attributes_(), path_("") {}
 
-ArchHelper::~ArchHelper() {}
+PlatformHelper::~PlatformHelper() {}
 
-void ArchHelper::AddAttribute(const std::string &tag, ScopedBuf &buf) {
+void PlatformHelper::AddAttribute(const std::string &tag, ScopedBuf &buf) {
   if (attributes_[tag]) {
     std::cerr << "Duplicate attribute added!" << std::endl;
     abort();
@@ -43,7 +43,7 @@ void ArchHelper::AddAttribute(const std::string &tag, ScopedBuf &buf) {
   attributes_[tag] = &buf;
 }
 
-bool ArchHelper::ReadNext() {
+bool PlatformHelper::ReadNext() {
   return false;
 }
 

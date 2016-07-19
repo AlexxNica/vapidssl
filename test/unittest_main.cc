@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "base/arch/test/arch_helper.h"
+#include "base/platform/test/platform_helper.h"
 #include "base/test/error_helper.h"
 #include "third_party/gtest/googletest/include/gtest/gtest.h"
 
@@ -50,13 +50,13 @@ int main(int argc, char **argv) {
       verbose = true;
     } else if (arg.compare(0, base_dir_len, kBaseDirArg) == 0) {
       std::string base_dir = arg.substr(base_dir_len);
-      has_dir = ::vapidssl::ArchHelper::SetBaseDir(base_dir);
+      has_dir = ::vapidssl::PlatformHelper::SetBaseDir(base_dir);
     } else {
       std::cerr << "error: Unknown argument: '" << arg << "'." << std::endl;
       print_usage(argv[0]);
     }
   }
-  if (!has_dir && !::vapidssl::ArchHelper::SetBaseDir(kDefaultBaseDir)) {
+  if (!has_dir && !::vapidssl::PlatformHelper::SetBaseDir(kDefaultBaseDir)) {
     std::cerr << "error: Missing or invalid project root." << std::endl;
     print_usage(argv[0]);
   }

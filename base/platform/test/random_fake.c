@@ -12,25 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "base/arch/thread.h"
+#include "base/platform/random.h"
 
-#include <assert.h>
-#include <stdlib.h>
-
-// NOTE: This file consciously avoids calling any of the error.h functions, as
-// it is the only file that errors.c has a dependency on.
-
-// g_local is the "thread local storage" for the non-threaded implementation.
-// Since there's no threads, a single global variable suffices.
-static void *g_local = NULL;
+#include <stdint.h>
 
 // Library routines.
 
-void *thread_get_local(void) {
-  return g_local;
-}
+uint32_t g_rand = 0xdeadbeef;
 
-void thread_set_local(void *mem) {
-  assert(!g_local || !mem);
-  g_local = mem;
+void random_buf(BUF *out) {
+  size_t len = buf_available(out);
+  uint8_t *raw = NULL;
+  buf_produce(out, len, &raw);
+  for (size_t i = 0; i < len; ++i) {
+    g_rand *= 1103515245;
+    g_rand += 12345;
+    raw[i] = (uint8_t)(g_rand >> 16);
+  }
 }

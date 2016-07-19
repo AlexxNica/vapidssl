@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef VAPIDSSL_BASE_ARCH_TEST_ARCH_HELPER_H
-#define VAPIDSSL_BASE_ARCH_TEST_ARCH_HELPER_H
+#ifndef VAPIDSSL_BASE_PLATFORM_TEST_PLATFORM_HELPER_H
+#define VAPIDSSL_BASE_PLATFORM_TEST_PLATFORM_HELPER_H
 
 #include <stdint.h>
 #include <map>
@@ -30,13 +30,14 @@
 
 namespace vapidssl {
 
-// ArchHelper provides a platform-specific way to get test data from test data
+// PlatformHelper provides a platform-specific way to get test data from test
+// data
 // files.  Once |main| has set the project root using |SetBaseDir|, individual
 // unit tests can specify test data files using |SetDataFile| and register named
 // buffers as "attributes" using |AddAttribute|.  Each subsequent call to
 // |ReadNext| will then populate the buffer with a corresponding value from the
 // file.
-class ArchHelper {
+class PlatformHelper {
  public:
   // RegisterListener adds a test event listener to |ErrorHelper|'s list and
   // returns for assignment in a static initailizer.
@@ -47,10 +48,10 @@ class ArchHelper {
   // without modification; otherwise, it returns true.
   static bool SetBaseDir(const std::string &base_dir);
 
-  ArchHelper();
-  virtual ~ArchHelper();
-  ArchHelper &operator=(const ArchHelper &) = delete;
-  ArchHelper(const ArchHelper &) = delete;
+  PlatformHelper();
+  virtual ~PlatformHelper();
+  PlatformHelper &operator=(const PlatformHelper &) = delete;
+  PlatformHelper(const PlatformHelper &) = delete;
 
   // SetDataFile takes a path, |path|, that gives the location of this test's
   // test data file relative to the project root. If |path_| is already set or
@@ -82,7 +83,10 @@ class ArchHelper {
   // base_dir_ is the project root directory.
   static std::string base_dir_;
 
-  class ArchListener : public ErrorListener {
+  class PlatformListener : public ErrorListener {
+   public:
+    PlatformListener();
+
    protected:
     // HandleError implements |ErrorListener::HandleError|, and handles platform
     // errors.
@@ -92,4 +96,4 @@ class ArchHelper {
 
 }  // namespace vapidssl
 
-#endif  // VAPIDSSL_BASE_ARCH_TEST_ARCH_HELPER_H
+#endif  // VAPIDSSL_BASE_PLATFORM_TEST_PLATFORM_HELPER_H

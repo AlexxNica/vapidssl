@@ -18,7 +18,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "base/arch/thread.h"
+#include "base/platform/thread.h"
 #include "public/error.h"
 
 // error_st represents an error, combining both an informational code as well as

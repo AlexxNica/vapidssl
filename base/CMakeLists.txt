@@ -1,7 +1,7 @@
-# .../base/CMakeLists.txt
-# Build utility objects
+# .../src/base/CMakeLists.txt
+# Builds base framework objects
 
-add_subdirectory(arch)
+add_subdirectory(platform)
 add_subdirectory(test)
 
 add_library(

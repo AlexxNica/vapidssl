@@ -48,14 +48,14 @@ typedef enum tls_result_t {
 // error_source_t indicates where an error occurred.  The error "reasons" below
 // are |int|s whose meaning depends on which source generated the error.
 // Different sources may reuse the same numeric value for different meanings,
-// e.g. "22" may mean EINVAL if the corresponding source is |kTlsErrArch|,
+// e.g. "22" may mean EINVAL if the corresponding source is |kTlsErrPlatform|,
 // or a TLS alert of |kTlsErrRecordOverflow| if the source is |kTlsErrPeer| or
 // |kTlsErrVapid|.
 typedef enum tls_error_source_t {
   // Errors reported by the C standard library or underlying OS.  For these
   // errors, the reason is platform-specific.  For example, on Linux it may be
   // an |errno| defined in asm-generic/errno-base.h.
-  kTlsErrArch,
+  kTlsErrPlatform,
   // Errors reported by the crypto library.  The reason is library-specific.  As
   // an example, for OpenSSL and BoringSSL the reason is the packed |int|
   // suitable for passing to the |ERR_GET_*| macros defined in openssl/err.h. */

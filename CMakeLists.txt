@@ -9,9 +9,12 @@ enable_language(C)
 enable_language(CXX)
 enable_testing()
 
-set(ARCH "linux")
 set(CRYPTO "boringssl")
 option(THREADS "Build with threading support" OFF)
+
+set(C_CXX_FLAGS "-Wall -Werror -Wformat=2 -Wsign-compare -Wmissing-field-initializers -ggdb -fvisibility=hidden")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${C_CXX_FLAGS} -std=c11 -Wmissing-prototypes -Wshadow")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 ${C_CXX_FLAGS} -Wshadow -fno-exceptions")
 
 ################################################################################
 ### BoringSSL ###
@@ -24,17 +27,13 @@ include_directories(${BORINGSSL_ROOT}/include)
 add_library(crypto STATIC IMPORTED)
 set_property(TARGET crypto PROPERTY IMPORTED_LOCATION ${LIBCRYPTO_BUILD_DIR}/crypto/libcrypto.a)
 
-if(${THREAD})
-  set(BORINGSSL_CMAKE_C_FLAGS "-DOPENSSL_SMALL")
-else(${THREAD})
-  set(BORINGSSL_CMAKE_C_FLAGS "-DOPENSSL_NO_THREADS -DOPENSSL_SMALL")
-endif(${THREAD})
-
+# TODO: switch on threads
+set(BORINGSSL_CMAKE_C_FLAGS "-DOPENSSL -DOPENSSL_NO_THREADS -ggdb")
 add_custom_target(rebuild-boringssl
   COMMAND rm -rf ${LIBCRYPTO_BUILD_DIR}
   COMMAND mkdir ${LIBCRYPTO_BUILD_DIR}
   COMMAND cd ${LIBCRYPTO_BUILD_DIR}
-  COMMAND ${CMAKE_COMMAND} -GNinja ${BORINGSSL_ROOT} -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DCMAKE_C_FLAGS="${BORINGSSL_CMAKE_C_FLAGS}"
+  COMMAND ${CMAKE_COMMAND} -GNinja ${BORINGSSL_ROOT} -DCMAKE_C_FLAGS="${BORINGSSL_CMAKE_C_FLAGS}"
   COMMAND ninja
   WORKING_DIRECTORY ${BORINGSSL_ROOT})
 
@@ -53,27 +52,19 @@ set_property(TARGET gtest_main PROPERTY IMPORTED_LOCATION ${LIBGTEST_BUILD_DIR}/
 
 # Setting the 'gtest_disable_pthreads' options breaks more than a third of
 # gtest's self-tests and our unit tests!
-#if(${THREAD})
-#  set(GTEST_OPTIONS "")
-#else(${THREAD})
-#  set(GTEST_OPTIONS "-Dgtest_disable_pthreads=ON")
-#endif(${THREAD})
+set(GTEST_CMAKE_C_FLAGS "-ggdb")
 
 add_custom_target(rebuild-googletest
   COMMAND rm -rf ${LIBGTEST_BUILD_DIR}
   COMMAND mkdir ${LIBGTEST_BUILD_DIR}
   COMMAND cd ${LIBGTEST_BUILD_DIR}
-  COMMAND ${CMAKE_COMMAND} -GNinja ${GOOGLETEST_ROOT} ${GTEST_OPTIONS}
+  COMMAND ${CMAKE_COMMAND} -GNinja ${GOOGLETEST_ROOT} -DCMAKE_C_FLAGS="${GTEST_CMAKE_C_FLAGS}"
   COMMAND ninja
   WORKING_DIRECTORY ${GOOGLETEST_ROOT})
 
 ################################################################################
 ### VapidSSL ###
 # Builds core VapidSSL library, libvapid.a
-
-set(C_CXX_FLAGS "-Wall -Werror -Wformat=2 -Wsign-compare -Wmissing-field-initializers -ggdb -fvisibility=hidden")
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${C_CXX_FLAGS} -std=c11 -Wmissing-prototypes -Wshadow")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 ${C_CXX_FLAGS} -Wshadow -fno-exceptions")
 
 include_directories(.)
 
@@ -84,39 +75,67 @@ add_subdirectory(base)
 #add_subdirectory(tls1_2)
 
 add_library(
-  vapid-core
-
-  $<TARGET_OBJECTS:base>
-#  $<TARGET_OBJECTS:common>
-#  $<TARGET_OBJECTS:x509v3>
-#  $<TARGET_OBJECTS:tls1_2>
-)
-
-add_library(
   vapid
 
-  $<TARGET_OBJECTS:arch>
+  STATIC
+
+  # No dependencies
+  $<TARGET_OBJECTS:base>
+  $<TARGET_OBJECTS:base-platform>
+
+  # Depends on base and crypto
+  #$<TARGET_OBJECTS:common>
+
+  # Depends on common
+  #$<TARGET_OBJECTS:x509v3>
+
+  # Depends on x509v3 and common
+  #$<TARGET_OBJECTS:tls1_2>
 )
-#target_link_libraries(vapid vapid-core vapid-crypto)
+#target_link_libraries(vapid vapid-crypto)
+
+add_library(
+  vapid-test
+
+  STATIC
+
+  # No dependencies
+  $<TARGET_OBJECTS:base>
+  $<TARGET_OBJECTS:base-test>
+  $<TARGET_OBJECTS:base-platform-test-generic>
+  $<TARGET_OBJECTS:base-platform-test-specific>
+
+  # Depends on base
+  #$<TARGET_OBJECTS:crypto-tests-generic>
+  #$<TARGET_OBJECTS:crypto-tests-specific>
+
+  # Depends on base and crypto
+  #$<TARGET_OBJECTS:common>
+  #$<TARGET_OBJECTS:common-test>
+
+  # Depends on common
+  #$<TARGET_OBJECTS:x509v3>
+  #$<TARGET_OBJECTS:x509v3-test>
+
+  # Depends on x509v3 and common
+  #$<TARGET_OBJECTS:tls1_2>
+  #$<TARGET_OBJECTS:tls1_2-test>
+)
+#target_link_libraries(vapid-test vapid-crypto)
 
 add_executable(
   vapid_test
 
   test/unittest_main.cc
-  $<TARGET_OBJECTS:base-test>
-  $<TARGET_OBJECTS:arch-test-generic>
-  $<TARGET_OBJECTS:arch-test-specific>
 
   $<TARGET_OBJECTS:base-unittests>
-#  $<TARGET_OBJECTS:vapid-crypto-unittests-generic>
-#  #$<TARGET_OBJECTS:vapid-crypto-unittests-specific>
-#  $<TARGET_OBJECTS:common-unittests>
-#  $<TARGET_OBJECTS:x509v3-unittests>
-#  $<TARGET_OBJECTS:tls1_2-unittests>
+  #$<TARGET_OBJECTS:crypto-unittests>
+  #$<TARGET_OBJECTS:common-unittests>
+  #$<TARGET_OBJECTS:x509v3-unittests>
+  #$<TARGET_OBJECTS:tls1_2-unittests>
 )
-# See parent CMakeList.txt for why gtest requires pthread.
-target_link_libraries(vapid_test vapid-core gtest pthread)
-#target_link_libraries(vapid_test vapid-core vapid-crypto-unittests gtest pthread)
+target_link_libraries(vapid_test vapid-test gtest pthread)
+
 set_target_properties(vapid_test PROPERTIES COMPILE_FLAGS "${cxx_default} -g")
 add_test(NAME vapid_test COMMAND vapid_test --base_dir=${PROJECT_SOURCE_DIR})
 
@@ -132,6 +151,11 @@ add_test(NAME vapid_test COMMAND vapid_test --base_dir=${PROJECT_SOURCE_DIR})
 #    POST_BUILD
 #    COMMAND strip -s -R .note.gnu.gold-version -R .comment -R .note -R .note.gnu.build-id -R .note.ABI-tag ${name})
 #endfunction()
+
+################################################################################
+### VapidSSL Tools ###
+
+#add_subdirectory(test)
 
 ################################################################################
 ### VapidSSL Examples ###
