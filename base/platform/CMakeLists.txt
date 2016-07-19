@@ -3,7 +3,7 @@
 # TODO(aarongreen): Add more versions for different platforms and threading
 # options.
 
-add_subdirectory(test)
+#add_subdirectory(test)
 
 if(${THREAD})
   message(FATAL_ERROR "Thread support is not yet implemented.")

@@ -36,17 +36,12 @@ struct error_st {
 
 // Public functions
 
-tls_result_t TLS_ERROR_size(size_t *out) {
-  if (!out) {
-    return kTlsFailure;
-  }
-  *out = sizeof(struct error_st);
-  return kTlsSuccess;
+size_t TLS_ERROR_size() {
+  return sizeof(struct error_st);
 }
 
 tls_result_t TLS_ERROR_init(void *mem, size_t len) {
-  size_t needed;
-  if (!TLS_ERROR_size(&needed) || !mem || len < needed) {
+  if (len < TLS_ERROR_size() || !mem) {
     return kTlsFailure;
   }
   memset(mem, 0, len);
@@ -120,8 +115,6 @@ tls_result_t error_clear() {
   if (!local) {
     return kTlsFailure;
   }
-  size_t len;
-  TLS_ERROR_size(&len);
-  memset(local, 0, len);
+  memset(local, 0, TLS_ERROR_size());
   return kTlsSuccess;
 }

@@ -123,8 +123,7 @@ TEST(ErrorTest, GetIndividualErrorDetails) {
 }
 
 TEST(ErrorDeathTest, CleanupErrors) {
-  size_t len = 0;
-  EXPECT_TRUE(TLS_ERROR_size(&len));
+  size_t len = TLS_ERROR_size();
   // Check we can cleanup with an error present.
   EXPECT_FALSE(ERROR_SET(kTlsErrPlatform, EAGAIN));
   EXPECT_TRUE(TLS_ERROR_test(kTlsErrPlatform, EAGAIN));
@@ -153,8 +152,7 @@ TEST(ErrorDeathTest, CleanupErrors) {
 
 TEST(ErrorDeathTest, PutAndGetErrorUninitialized) {
   // Uninitialize.
-  size_t len;
-  EXPECT_TRUE(TLS_ERROR_size(&len));
+  size_t len = TLS_ERROR_size();
   void *mem = TLS_ERROR_cleanup();
   EXPECT_NE(mem, nullptr);
   // Check each function's behavior when errors have been uninitialized.
@@ -169,13 +167,10 @@ TEST(ErrorDeathTest, PutAndGetErrorUninitialized) {
 
 TEST(ErrorTest, InsufficientMemory) {
   // Uninitialize.
-  size_t len;
-  EXPECT_TRUE(TLS_ERROR_size(&len));
+  size_t len = TLS_ERROR_size();
   void *mem = TLS_ERROR_cleanup();
   EXPECT_NE(mem, nullptr);
   // Check that initialization fails without sufficient memory.
-  EXPECT_FALSE(TLS_ERROR_size(nullptr));
-  EXPECT_TRUE(TLS_ERROR_size(&len));
   EXPECT_FALSE(TLS_ERROR_init(nullptr, len));
   EXPECT_FALSE(TLS_ERROR_init(mem, 0));
   EXPECT_FALSE(TLS_ERROR_init(mem, len - 1));

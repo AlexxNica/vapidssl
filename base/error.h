@@ -45,7 +45,7 @@ tls_result_t error_clear(void);
 // to an |error_set| call.
 #define ERROR_SET(source, reason) error_set(__FILE__, __LINE__, source, reason)
 
-#if defined(__cplusplus)
+#ifdef __cplusplus
 }
 #endif  // __cplusplus
 #endif  // VAPIDSSL_BASE_ERROR_H

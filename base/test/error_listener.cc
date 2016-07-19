@@ -23,6 +23,38 @@
 
 namespace vapidssl {
 
+// Public methods
+
+tls_error_source_t ErrorListener::GetSource() {
+  return source_.first;
+}
+
+const std::string &ErrorListener::GetSourceAsString() {
+  return source_.second;
+}
+
+const std::string &ErrorListener::GetReasonAsString(int reason) {
+  auto i = reasons_.find(reason);
+  if (i != reasons_.end()) {
+    return i->second;
+  }
+  static const std::string kUnknownReason = "Unknown reason";
+  return kUnknownReason;
+}
+
+// Protected methods
+
+ErrorListener::ErrorListener(tls_error_source_t e, const std::string &s)
+    : source_(e, s) {}
+
+bool ErrorListener::HasReason(int reason) {
+  return reasons_.find(reason) != reasons_.end();
+}
+
+void ErrorListener::AddReason(int i, const std::string &s) {
+  reasons_[i] = s;
+}
+
 void ErrorListener::OnTestPartResult(const ::testing::TestPartResult &result) {
   if (!result.failed()) {
     return;
@@ -41,8 +73,11 @@ void ErrorListener::OnTestPartResult(const ::testing::TestPartResult &result) {
     return;
   }
   // Handle it if it's an error we know about.
-  if (HandleError(source, reason)) {
+  if (source == GetSource()) {
     std::cout << "  Origin: " << file << ":" << line << std::endl;
+    std::cout << "  Source: " << GetSourceAsString() << std::endl;
+    std::cout << "  Reason: " << GetReasonAsString(reason);
+    std::cout << " (" << reason << ")" << std::endl;
     error_clear();
   }
 }

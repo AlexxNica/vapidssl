@@ -26,14 +26,13 @@
 
 namespace vapidssl {
 
-std::vector<::testing::TestEventListener *> &ErrorHelper::GetListeners() {
-  static std::vector<::testing::TestEventListener *> *listeners_ =
-      new std::vector<::testing::TestEventListener *>();
+std::vector<ErrorListener *> &ErrorHelper::GetListeners() {
+  static std::vector<ErrorListener *> *listeners_ =
+      new std::vector<ErrorListener *>();
   return *listeners_;
 }
 
-::testing::TestEventListener *ErrorHelper::AddListener(
-    ::testing::TestEventListener *listener) {
+ErrorListener *ErrorHelper::AddListener(ErrorListener *listener) {
   GetListeners().push_back(listener);
   return listener;
 }
@@ -41,48 +40,80 @@ std::vector<::testing::TestEventListener *> &ErrorHelper::GetListeners() {
 void ErrorHelper::Init(bool verbose) {
   auto &listeners = ::testing::UnitTest::GetInstance()->listeners();
   if (verbose) {
+    AddListener(new ErrorHelper::VapidListener);
     auto &extra = GetListeners();
     for (auto i : extra) {
       listeners.Append(i);
     }
-    listeners.Append(new ErrorHelper::VapidListener);
   }
   listeners.Append(new ErrorHelper::UncheckedListener);
   ::testing::AddGlobalTestEnvironment(new EnvironmentWithErrors);
 }
 
-bool ErrorHelper::VapidListener::HandleError(tls_error_source_t source,
-                                             int reason) {
-// kErrorStrings is a simple mapping of each tls_error_t value to its symbolic
-// name.
-#define STRINGIFY_ENUM_VALUE(reason) \
-  { reason, #reason }
-  static const std::map<int, std::string> kErrorStrings = {
-      // VapidSSL errors.
-      STRINGIFY_ENUM_VALUE(kTlsErrBadAlert),
-      STRINGIFY_ENUM_VALUE(kTlsErrTooManyEmptyChunks),
-      STRINGIFY_ENUM_VALUE(kTlsErrDisconnected),
-      STRINGIFY_ENUM_VALUE(kTlsErrOutOfMemory),
-      STRINGIFY_ENUM_VALUE(kTlsErrIntegerOverflow),
-      STRINGIFY_ENUM_VALUE(kTlsErrOutOfBounds),
-      STRINGIFY_ENUM_VALUE(kTlsErrInvalidArgument),
-      STRINGIFY_ENUM_VALUE(kTlsErrInvalidState),
-      STRINGIFY_ENUM_VALUE(kTlsErrUnsupportedAlgorithm),
-      STRINGIFY_ENUM_VALUE(kTlsErrNoAvailableOptions),
-      STRINGIFY_ENUM_VALUE(kTlsErrBufferChanged),
-      STRINGIFY_ENUM_VALUE(kTlsErrNotImplemented),
-  };
-#undef STRINGIFY_ENUM_VALUE
-  if (source != kTlsErrVapid) {
-    return false;
+const std::string &ErrorHelper::GetSourceAsString(tls_error_source_t source) {
+  for (auto i : GetListeners()) {
+    if (source == i->GetSource()) {
+      return i->GetSourceAsString();
+    }
   }
-  std::cout << "  Source: VapidSSL library" << std::endl;
-  const auto &i = kErrorStrings.find(reason);
-  if (i != kErrorStrings.end()) {
-    std::cout << "  Reason: " << i->second << std::endl;
-  }
-  return true;
+  static const std::string kUnknownSource = "Unknown source";
+  return kUnknownSource;
 }
+
+const std::string &ErrorHelper::GetReasonAsString(tls_error_source_t source,
+                                                  int reason) {
+  for (auto i : GetListeners()) {
+    if (source == i->GetSource()) {
+      return i->GetReasonAsString(reason);
+    }
+  }
+  static const std::string kUnknownReason = "Unknown reason";
+  return kUnknownReason;
+}
+
+// VapidListener methods
+
+ErrorHelper::VapidListener::VapidListener()
+    : ErrorListener(kTlsErrVapid, "VapidSSL library") {
+#define ADD_ERROR_REASON(reason) AddReason(reason, #reason);
+  ADD_ERROR_REASON(kTlsErrBadAlert);
+  ADD_ERROR_REASON(kTlsErrTooManyEmptyChunks);
+  ADD_ERROR_REASON(kTlsErrTooManyWarnings);
+  ADD_ERROR_REASON(kTlsErrLengthMismatch);
+  ADD_ERROR_REASON(kTlsErrDisconnected);
+  ADD_ERROR_REASON(kTlsErrOutOfMemory);
+  ADD_ERROR_REASON(kTlsErrIntegerOverflow);
+  ADD_ERROR_REASON(kTlsErrOutOfBounds);
+  ADD_ERROR_REASON(kTlsErrInvalidArgument);
+  ADD_ERROR_REASON(kTlsErrInvalidState);
+  ADD_ERROR_REASON(kTlsErrUnsupportedAlgorithm);
+  ADD_ERROR_REASON(kTlsErrNoAvailableOptions);
+  ADD_ERROR_REASON(kTlsErrBufferChanged);
+  ADD_ERROR_REASON(kTlsErrNotImplemented);
+
+  ADD_ERROR_REASON(kTlsErrCloseNotify);
+  ADD_ERROR_REASON(kTlsErrUnexpectedMessage);
+  ADD_ERROR_REASON(kTlsErrBadRecordMac);
+  ADD_ERROR_REASON(kTlsErrRecordOverflow);
+  ADD_ERROR_REASON(kTlsErrHandshakeFailure);
+  ADD_ERROR_REASON(kTlsErrBadCertificate);
+  ADD_ERROR_REASON(kTlsErrUnsupportedCertificate);
+  ADD_ERROR_REASON(kTlsErrRevokedCertificate);
+  ADD_ERROR_REASON(kTlsErrExpiredCertificate);
+  ADD_ERROR_REASON(kTlsErrCertificateUnknown);
+  ADD_ERROR_REASON(kTlsErrIllegalParameter);
+  ADD_ERROR_REASON(kTlsErrUnknownCA);
+  ADD_ERROR_REASON(kTlsErrDecodeError);
+  ADD_ERROR_REASON(kTlsErrDecryptError);
+  ADD_ERROR_REASON(kTlsErrProtocolVersion);
+  ADD_ERROR_REASON(kTlsErrInsufficientSecurity);
+  ADD_ERROR_REASON(kTlsErrInternalError);
+  ADD_ERROR_REASON(kTlsErrNoRenegotiation);
+  ADD_ERROR_REASON(kTlsErrUnsupportedExtension);
+#undef ADD_ERROR_REASON
+}
+
+// UncheckedListener methods
 
 void ErrorHelper::UncheckedListener::OnTestCaseEnd(
     const ::testing::TestCase &test_case) {
@@ -96,12 +127,10 @@ void ErrorHelper::UncheckedListener::OnTestCaseEnd(
   EXPECT_EQ(file, nullptr);
 }
 
+// EnvironmentWithErrors methods
+
 void ErrorHelper::EnvironmentWithErrors::SetUp() {
-  size_t len = 0;
-  if (!TLS_ERROR_size(&len)) {
-    std::cerr << "Failed to initialize thread local storage!" << std::endl;
-    abort();
-  }
+  size_t len = TLS_ERROR_size();
   err_.reset(new (std::nothrow) uint8_t[len]);
   assert(err_.get() != NULL);
   if (!TLS_ERROR_init(err_.get(), len)) {

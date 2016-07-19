@@ -34,21 +34,25 @@ class ErrorHelper {
   // GetListeners returns a reference to the list of |TestEventListener|s that
   // have been added via |AddListener|. |TestEventListener|s are described in
   // AdvancedGuide.md#extending-google-test-by-handling-test-events.
-  static std::vector<::testing::TestEventListener *> &GetListeners();
+  static std::vector<ErrorListener *> &GetListeners();
 
   // AddListener adds a |TestEventListener| to the static list then returns its
   // argument.  Listeners need to be added before |main| is called; thus the
   // proper way to use this method is as a static initializer:    const
   // ::testing::TestEventListener *kSomeListener =
   // ErrorHelper::AddListener(new SomeTestEventListener); */
-  static ::testing::TestEventListener *AddListener(
-      ::testing::TestEventListener *listener);
+  static ErrorListener *AddListener(ErrorListener *listener);
 
   // Init registers the listeners and configures an |EnvironmentWithErrors|.  If
   // |verbose| is true, it will register all listeners added with |AddListener|,
   // otherwise it will only register |kUncheckedListener|.  This method must be
   // called after |InitGoogleTest| but before |RUN_ALL_TESTS|.
   static void Init(bool verbose);
+
+  static const std::string &GetSourceAsString(tls_error_source_t source);
+  static const std::string &GetReasonAsString(tls_error_source_t source,
+                                              int reason);
+
 
   // ErrorHelper itself should not be instantiated!
   ErrorHelper() = delete;
@@ -71,10 +75,8 @@ class ErrorHelper {
   };
 
   class VapidListener : public ErrorListener {
-   protected:
-    // HandleError implements |ErrorListener::HandleError|, and handles VapidSSL
-    // errors.
-    bool HandleError(tls_error_source_t source, int reason) override;
+   public:
+    VapidListener();
   };
 
   class UncheckedListener : public ::testing::EmptyTestEventListener {
