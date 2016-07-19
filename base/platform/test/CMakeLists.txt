@@ -11,7 +11,7 @@ add_library(
   #io_mock.c
   platform_helper.cc
   random_fake.c
-  #time_fake.c
+  time_fake.c
 )
 
 

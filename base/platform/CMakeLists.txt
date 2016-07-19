@@ -19,7 +19,7 @@ if (APPLE OR ${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     thread_none.c
 #    io_posix.c
 #    random_posix.c
-#    time_posix.c
+    time_posix.c
   )
 
 else()
