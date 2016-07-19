@@ -102,8 +102,8 @@ add_library(
   # No dependencies
   $<TARGET_OBJECTS:base>
   $<TARGET_OBJECTS:base-test>
-  #$<TARGET_OBJECTS:base-platform-test-generic>
-  #$<TARGET_OBJECTS:base-platform-test-specific>
+  $<TARGET_OBJECTS:base-platform-test-generic>
+  $<TARGET_OBJECTS:base-platform-test-specific>
 
   # Depends on base
   #$<TARGET_OBJECTS:crypto-tests-generic>
@@ -123,20 +123,20 @@ add_library(
 )
 #target_link_libraries(vapid-test vapid-crypto)
 
-#add_executable(
-  #vapid_test
+add_executable(
+  vapid_test
 
-  #test/unittest_main.cc
+  test/unittest_main.cc
 
-  #$<TARGET_OBJECTS:base-unittests>
+  $<TARGET_OBJECTS:base-unittests>
   #$<TARGET_OBJECTS:crypto-unittests>
   #$<TARGET_OBJECTS:common-unittests>
   #$<TARGET_OBJECTS:x509v3-unittests>
   #$<TARGET_OBJECTS:tls1_2-unittests>
-#)
-#target_link_libraries(vapid_test vapid-test gtest pthread)
-#set_target_properties(vapid_test PROPERTIES COMPILE_FLAGS "${cxx_default} -g")
-#add_test(NAME vapid_test COMMAND vapid_test --base_dir=${PROJECT_SOURCE_DIR})
+)
+target_link_libraries(vapid_test vapid-test gtest pthread)
+set_target_properties(vapid_test PROPERTIES COMPILE_FLAGS "${cxx_default} -g")
+add_test(NAME vapid_test COMMAND vapid_test --base_dir=${PROJECT_SOURCE_DIR})
 
 # TODO(aarongreen: Enable stripping and/or and packing to reduce file sizes.
 # Some ideas:

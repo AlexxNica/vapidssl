@@ -31,14 +31,22 @@
 namespace vapidssl {
 
 // PlatformHelper provides a platform-specific way to get test data from test
-// data
-// files.  Once |main| has set the project root using |SetBaseDir|, individual
-// unit tests can specify test data files using |SetDataFile| and register named
-// buffers as "attributes" using |AddAttribute|.  Each subsequent call to
-// |ReadNext| will then populate the buffer with a corresponding value from the
-// file.
+// data files.  Once |main| has set the project root using |SetBaseDir|,
+// individual unit tests can specify test data files using |SetDataFile| and
+// register named buffers as "attributes" using |AddHexAttribute|.  Each
+// subsequent
+// call to |ReadNext| will then populate the buffer with a corresponding value
+// from the file.
 class PlatformHelper {
  public:
+  // AssertionRegex is a regular expression that matches the output for a failed
+  // assertion on this platform.
+  static const char *AssertionRegex;
+
+  // OsName is the short name of the operating system, e.g. "Linux", "Windows",
+  // or "Mac OSX".
+  static const char *OsName;
+
   // RegisterListener adds a test event listener to |ErrorHelper|'s list and
   // returns for assignment in a static initailizer.
   static ::testing::TestEventListener *RegisterListener();
@@ -59,11 +67,25 @@ class PlatformHelper {
   // modification; otherwise it returns true.
   virtual bool SetDataFile(const std::string &path);
 
-  // AddAttribute registers a |tag| to scan for in the test data file and an
+  // HasAttribute returns whether an optional attribute named by |tag| was
+  // provided in the last set of attributes read by |ReadNext|.
+  virtual bool HasAttribute(const std::string &tag) = 0;
+
+  // AddHexAttribute registers a |tag| to scan for in the test data file and an
   // unwrapped |buf| to use to wrap the data associated with that tag. It is an
-  // error to call |AddAttribute| with a |buf| that already wraps memory, or
-  // twice with the same |tag|.
-  virtual void AddAttribute(const std::string &tag, ScopedBuf &buf);
+  // error to call |AddHexAttribute| with a |buf| that already wraps memory, or
+  // to call |AddHexAttribute| or |AddStringAttribute| twice with the same
+  // |tag|.
+  virtual void AddHexAttribute(const std::string &tag, ScopedBuf &buf,
+                               bool optional = false);
+
+  // AddStringAttribute registers a |tag| to scan for in the test data file and
+  // an unwrapped |buf| to use to wrap the string associated with that tag. It
+  // is an error to call |AddHexAttribute| with a |buf| that already wraps
+  // memory, or to call |AddHexAttribute| or |AddStringAttribute| twice with the
+  // same |tag|.
+  virtual void AddStringAttribute(const std::string &tag, std::string &str,
+                                  bool optional = false);
 
   // ReadNext updates |attributes_| with values of the next |iteration_|'s data
   // in the test's associated test data file described by |path_|. If |path_| is
@@ -72,14 +94,25 @@ class PlatformHelper {
   virtual bool ReadNext();
 
  protected:
-  // attributes_ is the set of named test data attributes.  The attributes
-  // should be "registered" by adding a BUF struct for each name in the derived
-  // class's |SetUp| method.
-  std::map<std::string, ScopedBuf *> attributes_;
+  // optional_hex_ and required_hex_ are the optional and required sets,
+  // respectively, of named test data attributes represented by hex strings.
+  // The attributes should be "registered" by adding a BUF struct for each name
+  // in the derived class's |SetUp| method.
+  std::map<std::string, ScopedBuf *> optional_hex_;
+  std::map<std::string, ScopedBuf *> required_hex_;
+  // optional_str_ and required_str_ are the optional and required sets,
+  // respectively, of named test data attributes represented by strings. The
+  // attributes should be "registered" by adding a BUF struct for each name
+  // in the derived class's |SetUp| method.
+  std::map<std::string, std::string *> optional_str_;
+  std::map<std::string, std::string *> required_str_;
   // path_ is the absolute path to the test's gold file.
   std::string path_;
 
  private:
+  // CheckDuplicateTag aborts if a |tag| is added twice.
+  void CheckDuplicateTag(const std::string &tag);
+
   // base_dir_ is the project root directory.
   static std::string base_dir_;
 
@@ -88,9 +121,9 @@ class PlatformHelper {
     PlatformListener();
 
    protected:
-    // HandleError implements |ErrorListener::HandleError|, and handles platform
-    // errors.
-    bool HandleError(tls_error_source_t source, int reason) override;
+    // GetReasonAsString returns a human readable error message corresponding to
+    // |reason| for platform-specific errors.
+    const std::string &GetReasonAsString(int reason) override;
   };
 };
 

@@ -6,29 +6,23 @@ add_library(
 
   OBJECT
 
-#  ../lock_none.c
+  #../lock_none.c
   ../thread_none.c
-#  io_mock.c
+  #io_mock.c
   platform_helper.cc
   random_fake.c
-#  time_fake.c
+  #time_fake.c
 )
 
 
-if (APPLE)
-  message(FATAL_ERROR "Unsupported OS: " ${CMAKE_SYSTEM})
-
-elseif(WIN32)
-  message(FATAL_ERROR "Unsupported OS: " ${CMAKE_SYSTEM})
-
-elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
   add_library(
     base-platform-test-specific
 
     OBJECT
 
     platform_helper_linux.cc
-    #platform_helper_posix.cc
+    platform_helper_posix.cc
   )
 
 else()
