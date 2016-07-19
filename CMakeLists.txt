@@ -69,7 +69,7 @@ add_custom_target(rebuild-googletest
 include_directories(.)
 
 add_subdirectory(base)
-#add_subdirectory(crypto)
+add_subdirectory(crypto)
 #add_subdirectory(common)
 #add_subdirectory(x509v3)
 #add_subdirectory(tls1_2)
@@ -92,7 +92,7 @@ add_library(
   # Depends on x509v3 and common
   #$<TARGET_OBJECTS:tls1_2>
 )
-#target_link_libraries(vapid vapid-crypto)
+target_link_libraries(vapid vapid-crypto)
 
 add_library(
   vapid-test
@@ -107,7 +107,7 @@ add_library(
 
   # Depends on base
   #$<TARGET_OBJECTS:crypto-tests-generic>
-  #$<TARGET_OBJECTS:crypto-tests-specific>
+  $<TARGET_OBJECTS:crypto-tests-specific>
 
   # Depends on base and crypto
   #$<TARGET_OBJECTS:common>
@@ -121,7 +121,7 @@ add_library(
   #$<TARGET_OBJECTS:tls1_2>
   #$<TARGET_OBJECTS:tls1_2-test>
 )
-#target_link_libraries(vapid-test vapid-crypto)
+target_link_libraries(vapid-test vapid-crypto)
 
 add_executable(
   vapid_test
