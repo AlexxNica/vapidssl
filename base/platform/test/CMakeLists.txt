@@ -15,7 +15,17 @@ add_library(
 )
 
 
-if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+if (APPLE)
+  add_library(
+    base-platform-test-specific
+
+    OBJECT
+
+    platform_helper_apple.cc
+    platform_helper_posix.cc
+  )
+
+elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
   add_library(
     base-platform-test-specific
 
