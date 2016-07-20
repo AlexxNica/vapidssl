@@ -10,6 +10,7 @@ add_library(
 
   chunk.c
   hmac.c
+  stream.c
 )
 
 add_library(
@@ -19,5 +20,5 @@ add_library(
 
   chunk_unittest.cc
   hmac_unittest.cc
-  #stream_unittest.cc
+  stream_unittest.cc
 )

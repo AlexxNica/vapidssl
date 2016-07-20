@@ -8,5 +8,5 @@ add_library(
 
   chunk_test.cc
   #state_helper.cc
-  #stream_helper.cc
+  stream_helper.cc
 )
