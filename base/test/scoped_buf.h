@@ -38,7 +38,11 @@ class ScopedBuf {
   // allocated and zeroed memory.
   explicit ScopedBuf(size_t len);
 
-  // ScopedBuf() creates a buffer makes and wraps a copy of the data in
+  // ScopedBuf(vector) creates a buffer makes and wraps a copy of the data in
+  // |bytes|./
+  explicit ScopedBuf(void *bytes, size_t len);
+
+  // ScopedBuf(vector) creates a buffer makes and wraps a copy of the data in
   // |bytes|./
   explicit ScopedBuf(const std::vector<uint8_t> &bytes);
 
@@ -48,6 +52,15 @@ class ScopedBuf {
 
   // Get returns a pointer to the underlying buffer.  It never returns NULL.
   BUF *Get();
+
+  // Raw returns a pointer to the memory wrapped by the underlying buffer.
+  void *Raw();
+
+  // Len returns the size of the underlying buffer; i.e. |buf_size(Get())|.
+  size_t Len();
+
+  // Reset acts like |Reset(size_t)| with the size of |Len()|.
+  void Reset(void);
 
   // Reset() deallocates the buffer's memory (if applicable), allocates and
   // zeroes |len| bytes of new memory, and wraps the memory with the buffer.

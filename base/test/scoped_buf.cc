@@ -21,7 +21,6 @@
 #include <vector>
 
 #include "base/buf.h"
-#include "third_party/gtest/googletest/include/gtest/gtest.h"
 
 namespace vapidssl {
 
@@ -29,6 +28,13 @@ ScopedBuf::ScopedBuf() : buf_() {}
 
 ScopedBuf::ScopedBuf(size_t len) : buf_() {
   Reset(len);
+}
+
+ScopedBuf::ScopedBuf(void *bytes, size_t len) : buf_() {
+  Reset(len);
+  BUF tmp = buf_init();
+  buf_wrap(bytes, len, len, &tmp);
+  buf_copy(&tmp, &buf_);
 }
 
 ScopedBuf::ScopedBuf(const std::vector<uint8_t> &bytes) : buf_() {
@@ -41,6 +47,21 @@ ScopedBuf::~ScopedBuf() {
 
 BUF *ScopedBuf::Get() {
   return &buf_;
+}
+
+void *ScopedBuf::Raw() {
+  uint8_t *raw = nullptr;
+  buf_reset(&buf_, 0);
+  buf_produce(&buf_, Len(), &raw);
+  return raw;
+}
+
+size_t ScopedBuf::Len() {
+  return buf_size(&buf_);
+}
+
+void ScopedBuf::Reset() {
+  Reset(buf_size(&buf_));
 }
 
 void ScopedBuf::Reset(size_t len) {
@@ -59,12 +80,12 @@ void ScopedBuf::Reset(size_t len) {
     std::cerr << "Failed to allocate memory; aborting!" << std::endl;
     abort();
   }
-  buf_wrap(raw, len, &buf_);
+  buf_wrap(raw, len, len, &buf_);
   buf_zero(&buf_);
 }
 
 void ScopedBuf::Reset(ScopedBuf &buf) {
-  ScopedBuf::Reset(buf_size(buf.Get()));
+  ScopedBuf::Reset(buf.Len());
   buf_copy(buf.Get(), &buf_);
 }
 

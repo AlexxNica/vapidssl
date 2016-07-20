@@ -52,29 +52,6 @@ class BufTest : public ::testing::Test {
 
 using BufDeathTest = BufTest;
 
-TEST_F(BufDeathTest, ReserveMemory) {
-  void *mem0 = buf2_.raw;
-  void *mem1 = mem0;
-  size_t len0 = buf2_.max;
-  size_t len1 = len0;
-  // Check null parameters.
-  EXPECT_ASSERT(buf_reserve(1, NULL, &len0));
-  EXPECT_ASSERT(buf_reserve(1, &mem0, NULL));
-  buf_reserve(0, &mem0, &len0);
-  // Check buf_reserve advances correctly.
-  EXPECT_EQ(mem0, mem1);
-  EXPECT_EQ(len0, len1);
-  buf_reserve(1, &mem0, &len0);
-  EXPECT_EQ(mem0, (uint8_t *)mem1 + 1);
-  EXPECT_EQ(len0, len1 - 1);
-  // Check buf_reserve cannot reserve more than max.
-  EXPECT_ASSERT(buf_reserve(buf2_.max, &mem0, &len0));
-  buf_reserve(buf2_.max - 1, &mem0, &len0);
-  EXPECT_EQ(mem0, (uint8_t *)mem1 + buf2_.max);
-  EXPECT_EQ(len0, 0U);
-  EXPECT_ASSERT(buf_reserve(1, &mem0, &len0));
-}
-
 TEST_F(BufTest, InitializeBuffer) {
   BUF buf = buf_init();
   // Check the buffer really is empty.
@@ -91,19 +68,19 @@ TEST_F(BufDeathTest, WrapAndUnwrapBuf) {
   ASSERT_NE(mem.get(), nullptr);
   BUF buf = buf_init();
   // Check null parameters.
-  EXPECT_ASSERT(buf_wrap(mem.get(), len, NULL));
-  EXPECT_ASSERT(buf_wrap(NULL, len, &buf));
-  EXPECT_ASSERT(buf_wrap(mem.get(), 0, &buf));
+  EXPECT_ASSERT(buf_wrap(mem.get(), len, 0, NULL));
+  EXPECT_ASSERT(buf_wrap(NULL, len, 0, &buf));
+  EXPECT_ASSERT(buf_wrap(mem.get(), 0, 0, &buf));
   // Check wrapping works.
-  EXPECT_TRUE(buf_wrap(mem.get(), len, &buf));
+  EXPECT_TRUE(buf_wrap(mem.get(), len, len, &buf));
   EXPECT_EQ(buf.raw, mem.get());
   EXPECT_EQ(buf.offset, 0U);
   EXPECT_EQ(buf.length, len);
   EXPECT_EQ(buf.max, len);
   // Check re-wrapping only succeeds if the buffer is unchanged.
-  EXPECT_FALSE(buf_wrap(mem.get(), len - 1, &buf));
+  EXPECT_FALSE(buf_wrap(mem.get(), len - 1, 0, &buf));
   EXPECT_ERROR(kTlsErrVapid, kTlsErrBufferChanged);
-  EXPECT_TRUE(buf_wrap(mem.get(), len, &buf));
+  EXPECT_TRUE(buf_wrap(mem.get(), len, 0, &buf));
   // Check unwrapping works.
   EXPECT_EQ(buf_unwrap(&buf), mem.get());
   EXPECT_EQ(buf.raw, nullptr);
@@ -161,8 +138,8 @@ TEST_F(BufDeathTest, SplitAndMergeBuf) {
   EXPECT_EQ(buf2.max, 0xc00U);
   // Check we can merge the buffers back together.
   buf_merge(&buf2, &buf1);
-  EXPECT_EQ(buf1.offset, 0U);
-  EXPECT_EQ(buf1.length, 0x100U);
+  EXPECT_EQ(buf1.offset, 0x100U);
+  EXPECT_EQ(buf1.length, 0x200U);
   EXPECT_EQ(buf1.max, 0x1000U);
   EXPECT_EQ(buf2.offset, 0U);
   EXPECT_EQ(buf2.length, 0U);
@@ -183,8 +160,8 @@ TEST_F(BufDeathTest, SplitAndMergeBuf) {
   EXPECT_EQ(buf1.offset, 0U);
   EXPECT_EQ(buf1.length, 0U);
   EXPECT_EQ(buf1.max, 0U);
-  EXPECT_EQ(buf2.offset, 0U);
-  EXPECT_EQ(buf2.length, 0x300U);
+  EXPECT_EQ(buf2.offset, 0x600U);
+  EXPECT_EQ(buf2.length, 0x800U);
   EXPECT_EQ(buf2.max, 0x1000U);
 }
 

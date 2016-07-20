@@ -47,7 +47,8 @@ struct buf_st {
 // instead.
 uint8_t *buf_as(struct buf_st *buf, size_t size);
 
-#if defined(__cplusplus)
+
+#ifdef __cplusplus
 }
 #endif  // __cplusplus
 #endif  // VAPIDSSL_BASE_BUF_INTERNAL_H

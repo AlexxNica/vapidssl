@@ -50,7 +50,7 @@ extern "C" {
 // |buf_split| and/or |buf_merge|.  As an example, the following is valid, given
 // a memory region |mem| of length 3:
 //    BUF region = buf_init();
-//    buf_wrap(mem, 3, &region);
+//    buf_wrap(mem, 3, 0, &region);
 //    BUF buf1 = buf_init();
 //    BUF buf2 = buf_init();
 //    BUF buf3 = buf_init();
@@ -75,29 +75,28 @@ typedef struct buf_st BUF;
 // BUF_AS casts a wrapped memory region to a specific type. This is useful for
 // storing and retrieving data structures using BUFs.  As an example, a
 // structure |foo| of type |struct foo_st| can be stored and retrieved using the
-// following:    BUF foo_buf = buf_init();    buf_wrap(&foo_buf, &foo,
-// sizeof(struct foo_st));    struct foo_st* bar = BUF_AS(struct foo_st,
-// &foo_buf); */
+// following:
+//    BUF foo_buf = buf_init();
+//    buf_wrap(&foo_buf, &foo,
+//    sizeof(struct foo_st));
+//    struct foo_st* bar = BUF_AS(struct foo_st, &foo_buf);
 #define BUF_AS(type, buf) ((type *)(buf_as(buf, sizeof(type))))
 
 // Memory manipulation functions: These functions configure buffer structs their
 // consumed, ready, and available regions.
 
-// buf_reserve advances |mem| by |size| bytes and decrements |len| by |size|
-// before returning the original value of |mem|.  This function can be used to
-// carve out chunks of memory with specific lengths that may then be used with
-// |buf_wrap| below.
-void *buf_reserve(size_t size, void **mem, size_t *len);
-
 // buf_init returns an initially empty BUF that does not wrap any memory.
 BUF buf_init(void);
 
 // buf_wrap takes a region of memory pointed to by |mem| with length |len| and
-// configures |buf| to track it.  If this buffer already wraps a different
-// region of memory, |buf_wrap| fails with |kTlsErrBufferChanged|. This function
-// is only intended to be used by API functions that borrow memory from the API
-// consumer.
-tls_result_t buf_wrap(void *mem, size_t len, BUF *out);
+// configures |buf| to track it.  If |preallocate| is not equal to |len|, it
+// will configure |buf| as if it had already allocated |preallocate| bytes. As a
+// special case, if |preallocate| equals |len|, it is understood that |mem|
+// contains data and it will mark all of |buf| as ready.
+// If this buffer already wraps a different region of memory, |buf_wrap| fails
+// with |kTlsErrBufferChanged|. This function is only intended to be used by API
+// functions that borrow memory from the API consumer.
+tls_result_t buf_wrap(void *mem, size_t len, size_t preallocate, BUF *out);
 
 // buf_unwrap stops |buf| from tracking a memory region.  It returns |buf|'s
 // memory if it was directly wrapped using |buf_wrap| or NULL if |buf| is
@@ -117,8 +116,7 @@ tls_result_t buf_malloc(BUF *region, size_t len, BUF *out);
 void buf_free(BUF *buf);
 
 // buf_split truncates |in| to |in_size| and configures |out| to wrap the
-// truncated memory.  This method implicitly |buf_recycle|s consumed data and
-// then tries to put as much of the ready data into |in| as possible.
+// truncated memory.
 void buf_split(BUF *in, size_t in_size, BUF *out);
 
 // buf_merge combines two adjacent BUFs into |out| and |buf_unwrap|s |in|. BUFs

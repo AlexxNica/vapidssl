@@ -93,24 +93,25 @@ BUF buf_init(void) {
   return empty;
 }
 
-void *buf_reserve(size_t size, void **mem, size_t *len) {
-  assert(mem);
-  assert(len);
-  assert(*len >= size);
-  void *out = *mem;
-  *mem += size;
-  *len -= size;
-  return out;
-}
-
-tls_result_t buf_wrap(void *mem, size_t len, BUF *buf) {
+tls_result_t buf_wrap(void *mem, size_t len, size_t preallocate, BUF *out) {
   assert(mem);
   assert(len != 0);
-  if (!buf_wraps(buf, NULL, 0) &&
-      (!buf_wraps(buf, mem, len) || buf_get_region(buf) != NULL)) {
+  assert(out);
+  assert(buf_get_region(out) == NULL);
+  if (buf_wraps(out, mem, len)) {
+    return kTlsSuccess;
+  }
+  if (!buf_wraps(out, NULL, 0)) {
     return ERROR_SET(kTlsErrVapid, kTlsErrBufferChanged);
   }
-  buf_set(NULL, mem, 0, len, len, buf);
+  if (preallocate == 0) {
+    buf_set(NULL, mem, 0, 0, len, out);
+  } else if (preallocate == len) {
+    buf_set(NULL, mem, 0, len, len, out);
+  } else {
+    buf_set(NULL, mem, 0, len, len, out);
+    buf_increment_allocated(out, preallocate);
+  }
   return kTlsSuccess;
 }
 
@@ -176,43 +177,26 @@ void buf_split(BUF *in, size_t in_size, BUF *out) {
 }
 
 void buf_merge(BUF *in, BUF *out) {
+  assert(buf_allocated(in) == 0);
+  assert(buf_allocated(out) == 0);
   BUF *region = buf_get_region(in);
   assert(region == buf_get_region(out));
+  uint8_t *raw = NULL;
   uint8_t *in_raw = buf_start_raw(in);
   uint8_t *out_raw = buf_start_raw(out);
-  BUF *a = NULL;
-  BUF *b = NULL;
+  size_t consumed = buf_consumed(out);
   if (in_raw < out_raw) {
-    a = in;
-    b = out;
+    assert(buf_final_raw(in) == buf_start_raw(out));
+    raw = in_raw;
+    // Can't overflow since |consumed| < |size|
+    consumed += buf_size(in);
   } else {
-    a = out;
-    b = in;
+    assert(buf_final_raw(out) == buf_start_raw(in));
+    raw = out_raw;
   }
-  assert(buf_allocated(a) == 0);
-  assert(buf_allocated(b) == 0);
-  assert(buf_final_raw(a) == buf_start_raw(b));
-  // This shifts the data in |a| to the beginning of |a->raw|, then rewraps |b|
-  // around both |a|'s available space and |b|'s memory.
-  buf_recycle(a);
-  uint8_t *raw = buf_avail_raw(a);
-  // These lines can't overflow because: 1. buf_consumed, buf_ready, and
-  // buf_available are bounded by buf_size 2. |a| and |b| form a memory region
-  // of length buf_size(a) + buf_size(b) 3. size_t is big enough to hold the
-  // length of any memory region.
-  size_t consumed = buf_available(a) + buf_consumed(b);
-  size_t ready = buf_ready(b);
-  size_t size = buf_available(a) + buf_size(b);
-  buf_set(region, raw, consumed, ready, size, b);
-  // It then shifts the data in |b| forward (next to the data in |a|) and
-  // finally combines the BUFs.
-  buf_recycle(b);
-  raw = buf_start_raw(a);
-  // These lines can't overflow for the same reasons as above, except that
-  // buf_ready(a) <= buf_size(a) and buf_ready(b) <= buf_size(b).
-  consumed = 0;
-  ready = buf_ready(a) + buf_ready(b);
-  size = buf_ready(a) + buf_size(b);
+  size_t ready = buf_ready(out);
+  // Can't overflow since it is the length of a contiguous chunk of memory
+  size_t size = buf_size(in) + buf_size(out);
   buf_unset(in);
   buf_set(region, raw, consumed, ready, size, out);
 }
@@ -254,10 +238,8 @@ tls_result_t buf_may_consume(const BUF *buf, size_t len, uint8_t **out) {
   if (len > buf_ready(buf)) {
     return ERROR_SET(kTlsErrVapid, kTlsErrOutOfBounds);
   }
-  if (len != 0) {
-    if (out) {
-      *out = buf_ready_raw(buf);
-    }
+  if (len != 0 && out) {
+    *out = buf_ready_raw(buf);
   }
   return kTlsSuccess;
 }
@@ -378,7 +360,7 @@ tls_result_t buf_atou(BUF *buf, uint8_t len, uint32_t *out) {
   uint32_t digit;
   while (len--) {
     if (!buf_get_val(buf, 1, &digit)) {
-      return ERROR_SET(kTlsErrVapid, kTlsErrOutOfBounds);
+      return kTlsFailure;
     } else if (digit < '0' || digit > '9') {
       return ERROR_SET(kTlsErrVapid, kTlsErrDecodeError);
     }
@@ -524,28 +506,16 @@ static void buf_increment_ready(BUF *buf, size_t num) {
 
 static void buf_set(BUF *region, uint8_t *raw, size_t consumed, size_t ready,
                     size_t size, BUF *out) {
-  // These are broken into separate conditions to make debugging easier.  The
-  // |assert|s are to ensure traceability during unit testing, while the
-  // |abort|s are to ensure we die at runtime in the event of memory
-  // corruption./
+  // Use asserts to unit test and help in debugging.
   assert(out);
-  if (!out) {
-    abort();
-  }
-  assert((raw && size != 0) || (!raw && size == 0));
-  if ((raw && size == 0) || (!raw && size != 0)) {
-    abort();
-  }
+  assert((!raw && size == 0) || (raw && size != 0));
   assert(consumed <= consumed + ready);
-  if (consumed + ready < consumed) {
-    abort();
-  }
   assert(consumed + ready <= size);
-  if (size < consumed + ready) {
-    abort();
-  }
   assert(out->allocated == 0 || (out->raw == raw && out->allocated <= size));
-  if (out->allocated != 0 && (out->raw != raw || out->allocated > size)) {
+  // Use |abort| are to die at runtime in the event of memory corruption.
+  if (!out || (raw && size == 0) || (!raw && size != 0) ||
+      (consumed + ready < consumed) || (size < consumed + ready) ||
+      (out->allocated != 0 && (out->raw != raw || out->allocated > size))) {
     abort();
   }
   out->region = region;
