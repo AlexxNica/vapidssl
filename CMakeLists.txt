@@ -106,7 +106,7 @@ add_library(
   $<TARGET_OBJECTS:base-platform-test-specific>
 
   # Depends on base
-  #$<TARGET_OBJECTS:crypto-tests-generic>
+  $<TARGET_OBJECTS:crypto-tests-generic>
   $<TARGET_OBJECTS:crypto-tests-specific>
 
   # Depends on base and crypto
@@ -129,7 +129,7 @@ add_executable(
   test/unittest_main.cc
 
   $<TARGET_OBJECTS:base-unittests>
-  #$<TARGET_OBJECTS:crypto-unittests>
+  $<TARGET_OBJECTS:crypto-unittests>
   #$<TARGET_OBJECTS:common-unittests>
   #$<TARGET_OBJECTS:x509v3-unittests>
   #$<TARGET_OBJECTS:tls1_2-unittests>

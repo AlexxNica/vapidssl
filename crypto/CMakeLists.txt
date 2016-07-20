@@ -11,7 +11,7 @@ add_library(
   crypto.c
   #aead.c
   #hash.c
-  #keyex.c
+  keyex.c
   #sign.c
 )
 
@@ -22,16 +22,16 @@ add_library(
   $<TARGET_OBJECTS:crypto-specific>
 )
 
-#add_library(
-#  crypto-unittests
+add_library(
+  crypto-unittests
 
-#  OBJECT
+  OBJECT
 
 #  aead_unittest.cc
 #  hash_unittest.cc
-#  keyex_unittest.cc
+  keyex_unittest.cc
 #  sign_unittest.cc
-#)
+)
 
 if(${CRYPTO} STREQUAL "boringssl")
   add_subdirectory(boringssl)
