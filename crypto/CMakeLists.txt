@@ -12,7 +12,7 @@ add_library(
   aead.c
   hash.c
   keyex.c
-  #sign.c
+  sign.c
 )
 
 add_library(
@@ -30,7 +30,7 @@ add_library(
   aead_unittest.cc
   hash_unittest.cc
   keyex_unittest.cc
-#  sign_unittest.cc
+  sign_unittest.cc
 )
 
 if(${CRYPTO} STREQUAL "boringssl")

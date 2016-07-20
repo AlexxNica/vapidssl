@@ -12,5 +12,5 @@ add_library(
   crypto_boringssl.c
   hash_boringssl.c
   keyex_boringssl.c
-  #sign_boringssl.c
+  sign_boringssl.c
 )
