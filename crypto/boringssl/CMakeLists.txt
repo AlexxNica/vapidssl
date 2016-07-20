@@ -8,7 +8,7 @@ add_library(
 
   OBJECT
 
-  #aead_boringssl.c
+  aead_boringssl.c
   crypto_boringssl.c
   hash_boringssl.c
   keyex_boringssl.c

@@ -9,7 +9,7 @@ add_library(
   OBJECT
 
   crypto.c
-  #aead.c
+  aead.c
   hash.c
   keyex.c
   #sign.c
@@ -27,7 +27,7 @@ add_library(
 
   OBJECT
 
-#  aead_unittest.cc
+  aead_unittest.cc
   hash_unittest.cc
   keyex_unittest.cc
 #  sign_unittest.cc

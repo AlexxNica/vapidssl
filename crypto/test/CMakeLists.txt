@@ -6,7 +6,7 @@ add_library(
 
   OBJECT
 
-  #aead_test.cc
+  aead_test.cc
   crypto_test.cc
   hash_test.cc
 )
