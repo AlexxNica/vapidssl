@@ -31,6 +31,12 @@ namespace vapidssl {
 // testing.  It is not directly used by unit test cases.
 class ErrorHelper {
  public:
+  // ErrorHelper itself should not be instantiated!
+  ErrorHelper() = delete;
+  ~ErrorHelper() = default;
+  ErrorHelper &operator=(const ErrorHelper &) = delete;
+  ErrorHelper(const ErrorHelper &) = delete;
+
   // GetListeners returns a reference to the list of |TestEventListener|s that
   // have been added via |AddListener|. |TestEventListener|s are described in
   // AdvancedGuide.md#extending-google-test-by-handling-test-events.
@@ -53,20 +59,17 @@ class ErrorHelper {
   static const std::string &GetReasonAsString(tls_error_source_t source,
                                               int reason);
 
-
-  // ErrorHelper itself should not be instantiated!
-  ErrorHelper() = delete;
-  ~ErrorHelper() = default;
-  ErrorHelper &operator=(const ErrorHelper &) = delete;
-  ErrorHelper(const ErrorHelper &) = delete;
-
  private:
   // ErrorHelper::Environment sets up and tears down the thread-local error
   // storage as needed. See Google Test's
   // AdvancedGuide.md#global-set-up-and-tear-down
   class EnvironmentWithErrors : public ::testing::Environment {
    protected:
+    // SetUp prepares the testing environment by calling |TLS_ERROR_init|.
     void SetUp() override;
+
+    // TearDown cleans up the testing environment by calling
+    // |TLS_ERROR_cleanup|.
     void TearDown() override;
 
    private:
@@ -80,12 +83,20 @@ class ErrorHelper {
   };
 
   class UncheckedListener : public ::testing::EmptyTestEventListener {
+   public:
+    explicit UncheckedListener(bool verbose);
+
    protected:
     // OnTestCaseEnd is called after each test case completes and fails if
     // VapidSSL indicates an error.  Expected errors should be automatically
     // checked and cleared using |EXPECT_ERROR| and |ASSERT_ERROR| from
     // test/macros.h.
     void OnTestCaseEnd(const ::testing::TestCase &test_case) override;
+
+   private:
+    // verbose_ indicates whether to print error details when a test case ends
+    // with an error present.
+    bool verbose_;
   };
 };
 

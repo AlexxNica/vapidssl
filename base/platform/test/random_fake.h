@@ -12,26 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "base/platform/test/random_fake.h"
-#include "base/platform/random.h"
+#ifndef VAPIDSSL_BASE_PLATFORM_TEST_RANDOM_FAKE_H
+#define VAPIDSSL_BASE_PLATFORM_TEST_RANDOM_FAKE_H
+#ifdef __cplusplus
+extern "C" {
+#endif  // __cplusplus
 
 #include <stdint.h>
 
-uint32_t g_rand = 0xdeadbeef;
+// random_fake_seed allows the unit tests to reseed the PRNG with a new |seed|.
+void random_fake_seed(uint32_t seed);
 
-// Library routines.
-
-void random_fake_seed(uint32_t seed) {
-  g_rand = seed;
+#ifdef __cplusplus
 }
-
-void random_buf(BUF *out) {
-  size_t len = buf_available(out);
-  uint8_t *raw = NULL;
-  buf_produce(out, len, &raw);
-  for (size_t i = 0; i < len; ++i) {
-    g_rand *= 1103515245;
-    g_rand += 12345;
-    raw[i] = (uint8_t)(g_rand >> 16);
-  }
-}
+#endif  // __cplusplus
+#endif  // VAPIDSSL_BASE_PLATFORM_TEST_RANDOM_FAKE_H

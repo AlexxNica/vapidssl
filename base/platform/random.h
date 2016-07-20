@@ -31,7 +31,7 @@ extern "C" {
 // external state, such as the exact timing of calls to |random_buf|.
 void random_buf(BUF *out);
 
-#if defined(__cplusplus)
+#ifdef __cplusplus
 }
 #endif  // __cplusplus
 #endif  // VAPIDSSL_BASE_PLATFORM_RANDOM_H

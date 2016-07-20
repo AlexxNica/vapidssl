@@ -18,6 +18,8 @@
 extern "C" {
 #endif  // __cplusplus
 
+#include <stdint.h>
+
 // bool_t simply represents a true/false value, and lets the compiler pick the
 // storage type.  This type is distinct from |tls_result_t|, which is the
 // preferred return type to indicate the success or failure of a function.
@@ -54,7 +56,7 @@ typedef enum data_protection_t {
 // complexity does not currently justify the small savings in memory.
 typedef uint32_t uint24_t;
 
-#if defined(__cplusplus)
+#ifdef __cplusplus
 }
 #endif  // __cplusplus
 #endif  // VAPIDSSL_BASE_TYPES_H

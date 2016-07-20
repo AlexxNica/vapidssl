@@ -39,14 +39,14 @@ ErrorListener *ErrorHelper::AddListener(ErrorListener *listener) {
 
 void ErrorHelper::Init(bool verbose) {
   auto &listeners = ::testing::UnitTest::GetInstance()->listeners();
+  AddListener(new ErrorHelper::VapidListener);
   if (verbose) {
-    AddListener(new ErrorHelper::VapidListener);
     auto &extra = GetListeners();
     for (auto i : extra) {
       listeners.Append(i);
     }
   }
-  listeners.Append(new ErrorHelper::UncheckedListener);
+  listeners.Append(new ErrorHelper::UncheckedListener(verbose));
   ::testing::AddGlobalTestEnvironment(new EnvironmentWithErrors);
 }
 
@@ -115,6 +115,9 @@ ErrorHelper::VapidListener::VapidListener()
 
 // UncheckedListener methods
 
+ErrorHelper::UncheckedListener::UncheckedListener(bool verbose)
+    : ::testing::EmptyTestEventListener(), verbose_(verbose) {}
+
 void ErrorHelper::UncheckedListener::OnTestCaseEnd(
     const ::testing::TestCase &test_case) {
   // This event listener may be called when TLS_ERROR_init has not been called,
@@ -122,9 +125,21 @@ void ErrorHelper::UncheckedListener::OnTestCaseEnd(
   if (!thread_get_local()) {
     return;
   }
+  tls_error_source_t source;
+  int reason = -1;
   const char *file = NULL;
-  EXPECT_TRUE(TLS_ERROR_get(NULL, NULL, &file, NULL));
-  EXPECT_EQ(file, nullptr);
+  int line = -1;
+  ASSERT_TRUE(TLS_ERROR_get(&source, &reason, &file, &line));
+  if (file != nullptr) {
+    if (verbose_) {
+      std::cout << "  Origin: " << file << ":" << line << std::endl;
+      std::cout << "  Source: " << GetSourceAsString(source) << std::endl;
+      std::cout << "  Reason: " << GetReasonAsString(source, reason);
+      std::cout << " (" << reason << ")" << std::endl;
+    }
+    error_clear();
+    ADD_FAILURE();
+  }
 }
 
 // EnvironmentWithErrors methods

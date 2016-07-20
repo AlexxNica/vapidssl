@@ -100,6 +100,9 @@ void list_swap(struct list_st *list, size_t size, uint8_t i, uint8_t j) {
   list_is_valid(list, size);
   assert(i < list->num_elems);
   assert(j < list->num_elems);
+  if (i == j) {
+    return;
+  }
   uint8_t *a = list_at(list, i);
   uint8_t *b = list_at(list, j);
   uint8_t c = 0;

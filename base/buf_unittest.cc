@@ -27,9 +27,10 @@ namespace vapidssl {
 
 class BufTest : public ::testing::Test {
  protected:
-  BufTest() : buf1_(), raw1_(), buf2_(), raw2_() {}
+  BufTest() = default;
 
-  virtual void SetUp() {
+  // SetUp prepares the test by allocating memory for the test buffers.
+  void SetUp() override {
     buf1_ = {NULL, NULL, 0, 0x10000, 0x10000, 0};
     raw1_.reset(new (std::nothrow) uint8_t[buf1_.max]);
     if (!raw1_.get()) {
@@ -44,9 +45,13 @@ class BufTest : public ::testing::Test {
     buf2_.raw = raw2_.get();
   }
 
+  // buf1_ is large generic buffer.
   BUF buf1_;
+  // raw1_ is the memory backing buf1_.
   std::unique_ptr<uint8_t[]> raw1_;
+  // buf2_ is a smaller generic buffer.
   BUF buf2_;
+  // raw2_ is the memory backing buf2_.
   std::unique_ptr<uint8_t[]> raw2_;
 };
 

@@ -19,7 +19,7 @@ extern "C" {
 #endif  // __cplusplus
 
 // This is the platform and/or OS specific interface for thread-local storage.
-// This file does NOT contain concurrency primitives; see base/platform/lock.h
+// This file does NOT contain concurrency primitives; see platform/lock.h
 // instead. This file gives a way to set and retrieve memory specific to however
 // many threads are using the library, for as low as one. It is mainly used to
 // keep error stacks separate between threads (see error.h).
@@ -35,7 +35,7 @@ void *thread_get_local(void);
 // responsibility to zero and/or free the memory as appropriate.
 void thread_set_local(void *mem);
 
-#if defined(__cplusplus)
+#ifdef __cplusplus
 }
 #endif  // __cplusplus
 #endif  // VAPIDSSL_BASE_PLATFORM_THREAD_H

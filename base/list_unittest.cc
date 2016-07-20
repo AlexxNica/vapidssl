@@ -29,21 +29,22 @@ namespace vapidssl {
 
 class ListTest : public ::testing::Test {
  protected:
-  ListTest() : region_(), list_(), max_(8), ignored_(nullptr) {}
+  ListTest() : max_(8), ignored_(nullptr) {}
 
-  virtual void SetUp() {
+  // SetUp prepares the test by allocating the necessary memory.
+  void SetUp() override {
     region_.Reset(sizeof(BUF) * max_);
   }
 
-  // region_ wraps the memory that other BUFs will be allocated from.
-  ScopedBuf region_;
-  // list_ represents the data under test.
-  LIST list_;
   // max_ is the maximum number of elements in |list_|.
   size_t max_;
   // ignored_ is used to suppress warnings caused by |LIST_*| return values
   // being ignored when in an |EXPECT_ASSERT|. */
   void *ignored_;
+  // region_ wraps the memory that other BUFs will be allocated from.
+  ScopedBuf region_;
+  // list_ represents the data under test.
+  LIST list_;
 };
 
 typedef ListTest ListDeathTest;

@@ -8,7 +8,7 @@ add_library(
 
   #../lock_none.c
   ../thread_none.c
-  #io_mock.c
+  io_mock.c
   platform_helper.cc
   random_fake.c
   time_fake.c

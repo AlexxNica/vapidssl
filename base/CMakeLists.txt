@@ -1,4 +1,4 @@
-# .../src/base/CMakeLists.txt
+# .../base/CMakeLists.txt
 # Builds base framework objects
 
 add_subdirectory(platform)
