@@ -70,7 +70,7 @@ include_directories(.)
 
 add_subdirectory(base)
 add_subdirectory(crypto)
-#add_subdirectory(common)
+add_subdirectory(common)
 #add_subdirectory(x509v3)
 #add_subdirectory(tls1_2)
 
@@ -84,7 +84,7 @@ add_library(
   $<TARGET_OBJECTS:base-platform>
 
   # Depends on base and crypto
-  #$<TARGET_OBJECTS:common>
+  $<TARGET_OBJECTS:common>
 
   # Depends on common
   #$<TARGET_OBJECTS:x509v3>
@@ -110,8 +110,8 @@ add_library(
   $<TARGET_OBJECTS:crypto-tests-specific>
 
   # Depends on base and crypto
-  #$<TARGET_OBJECTS:common>
-  #$<TARGET_OBJECTS:common-test>
+  $<TARGET_OBJECTS:common>
+  $<TARGET_OBJECTS:common-test>
 
   # Depends on common
   #$<TARGET_OBJECTS:x509v3>
@@ -130,7 +130,7 @@ add_executable(
 
   $<TARGET_OBJECTS:base-unittests>
   $<TARGET_OBJECTS:crypto-unittests>
-  #$<TARGET_OBJECTS:common-unittests>
+  $<TARGET_OBJECTS:common-unittests>
   #$<TARGET_OBJECTS:x509v3-unittests>
   #$<TARGET_OBJECTS:tls1_2-unittests>
 )
