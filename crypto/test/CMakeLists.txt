@@ -8,5 +8,5 @@ add_library(
 
   #aead_test.cc
   crypto_test.cc
-  #hash_test.cc
+  hash_test.cc
 )
