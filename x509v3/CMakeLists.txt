@@ -6,9 +6,9 @@ add_library(
 
   OBJECT
 
-  asn1.c
+#  asn1.c
 #  certificate.c
-#  punycode.c
+  oid.c
 )
 
 add_library(
@@ -16,7 +16,7 @@ add_library(
 
   OBJECT
 
-  asn1_unittest.cc
+#  asn1_unittest.cc
 #  certificate_unittest.cc
-#  punycode_unittest.cc
+  oid_unittest.cc
 )

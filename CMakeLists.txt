@@ -71,7 +71,7 @@ include_directories(.)
 add_subdirectory(base)
 add_subdirectory(crypto)
 add_subdirectory(common)
-#add_subdirectory(x509v3)
+add_subdirectory(x509v3)
 #add_subdirectory(tls1_2)
 
 add_library(
@@ -87,7 +87,7 @@ add_library(
   $<TARGET_OBJECTS:common>
 
   # Depends on common
-  #$<TARGET_OBJECTS:x509v3>
+  $<TARGET_OBJECTS:x509v3>
 
   # Depends on x509v3 and common
   #$<TARGET_OBJECTS:tls1_2>
@@ -114,7 +114,7 @@ add_library(
   $<TARGET_OBJECTS:common-test>
 
   # Depends on common
-  #$<TARGET_OBJECTS:x509v3>
+  $<TARGET_OBJECTS:x509v3>
   #$<TARGET_OBJECTS:x509v3-test>
 
   # Depends on x509v3 and common
@@ -131,7 +131,7 @@ add_executable(
   $<TARGET_OBJECTS:base-unittests>
   $<TARGET_OBJECTS:crypto-unittests>
   $<TARGET_OBJECTS:common-unittests>
-  #$<TARGET_OBJECTS:x509v3-unittests>
+  $<TARGET_OBJECTS:x509v3-unittests>
   #$<TARGET_OBJECTS:tls1_2-unittests>
 )
 target_link_libraries(vapid_test vapid-test gtest pthread)
