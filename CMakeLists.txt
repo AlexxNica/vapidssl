@@ -72,7 +72,7 @@ add_subdirectory(base)
 add_subdirectory(crypto)
 add_subdirectory(common)
 add_subdirectory(x509v3)
-#add_subdirectory(tls1_2)
+add_subdirectory(tls1_2)
 
 add_library(
   vapid
@@ -118,7 +118,7 @@ add_library(
   $<TARGET_OBJECTS:x509v3-test>
 
   # Depends on x509v3 and common
-  #$<TARGET_OBJECTS:tls1_2>
+  $<TARGET_OBJECTS:tls1_2>
   #$<TARGET_OBJECTS:tls1_2-test>
 )
 target_link_libraries(vapid-test vapid-crypto)
