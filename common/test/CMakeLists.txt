@@ -7,6 +7,6 @@ add_library(
   OBJECT
 
   chunk_test.cc
-  #state_helper.cc
+  state_helper.cc
   stream_helper.cc
 )

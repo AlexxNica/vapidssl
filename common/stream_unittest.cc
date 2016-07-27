@@ -42,8 +42,8 @@ class StreamTest : public HashTest {
   void SetUp() override {
     HashTest::SetUp();
     region_.Reset(0x1000);
-    recv_ = stream_helper_.Get(kRecv);
-    send_ = stream_helper_.Get(kSend);
+    recv_ = stream_helper_.GetStream(kIoLoopback, kRecv);
+    send_ = stream_helper_.GetStream(kIoLoopback, kSend);
   }
 
   // recv_ is the stream on which data can be received.
@@ -166,6 +166,7 @@ TEST_P(StreamDeathTest, SetBadNesting) {
 }
 
 TEST_P(StreamDeathTest, CheckNesting) {
+  stream_helper_.SetNesting(kRecv, 5);
   stream_helper_.Reset();
   uint8_t u8 = 0;
   uint16_t u16 = 0;
@@ -253,6 +254,7 @@ TEST_P(StreamDeathTest, SendAndRecvInts) {
 }
 
 TEST_P(StreamDeathTest, SendAndRecvBufs) {
+  stream_helper_.SetPending(4);
   stream_helper_.Reset();
   ScopedBuf empty;
   ScopedBuf tmp(0x100);
