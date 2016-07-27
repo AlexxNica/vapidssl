@@ -115,7 +115,7 @@ add_library(
 
   # Depends on common
   $<TARGET_OBJECTS:x509v3>
-  #$<TARGET_OBJECTS:x509v3-test>
+  $<TARGET_OBJECTS:x509v3-test>
 
   # Depends on x509v3 and common
   #$<TARGET_OBJECTS:tls1_2>

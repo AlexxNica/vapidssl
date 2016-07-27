@@ -1,0 +1,194 @@
+# This file was created from the certificate chain found under test/ca
+
+LABEL: Chain Length
+SERVER: 000849
+NAME: Leaf
+CALLBACK: 1
+
+##### Begin leaf certificate #####
+LABEL: Certificate Length
+SERVER: 00048b
+
+LABEL: Certificate (Leaf)
+SERVER: 30820487
+
+LABEL: TBS Certificate (Leaf)
+SERVER: 3082036f
+
+LABEL: Version (Leaf)
+SERVER: a003020102
+# TODO(aarongreen): Add test where tag != (kAsn1ContextSpecific | 0)
+# TODO(aarongreen): Add test where length != 1
+# TODO(aarongreen): Add test where version != 2
+
+LABEL: Serial (Leaf)
+SERVER: 02021000
+# TODO(aarongreen): Add test where serial begins with 0x00
+# TODO(aarongreen): Add test where serial begins with 0x80
+
+LABEL: Inner Algorithm ID (Leaf)
+SERVER: 300d06092a864886f70d01010b0500
+# TODO(aarongreen): Add test where nested structure is invalid
+# TODO(aarongreen): Add test where algorithm is not supported
+
+LABEL: Issuer DN (Leaf)
+SERVER: 3061310b30090603550406130255533113301106035504080c0a43616c69666f726e69613110300e060355040a0c07467563687369613111300f060355040b0c08566170696453534c3118301606035504030c0f496e7465726d656469617465204341
+
+LABEL: Validity (Leaf)
+SERVER: 301e
+
+LABEL: Not Before (Leaf)
+SERVER: 170d3136303632313138313130315a
+# TODO(aarongreen): Add tests where each time field is invalid
+# TODO(aarongreen): Add test where time is after now
+
+LABEL: Not After (Leaf)
+SERVER: 170d3137303632313138313130315a
+# TODO(aarongreen): Add tests where each time field is invalid
+# TODO(aarongreen): Add test where time is before now
+
+LABEL: Subject DN (Leaf)
+SERVER: 306e310b30090603550406130255533113301106035504080c0a43616c69666f726e69613116301406035504070c0d4d6f756e7461696e20566965773110300e060355040a0c07467563687369613111300f060355040b0c08566170696453534c310d300b06035504030c044c656166
+# TODO(aarongreen): Add test where there is no CN
+# TODO(aarongreen): Add test where name requires puny-coding
+
+LABEL: SPKI Algorithm ID (Leaf)
+SERVER: 30820122300d06092a864886f70d0101010500
+# TODO(aarongreen): Add test where nested structure is invalid
+# TODO(aarongreen): Add test where algorithm is not supported
+
+LABEL: Public Key Preamble (Leaf)
+SERVER: 0382010f00
+
+LABEL: Public Key (Leaf)
+SERVER: 3082010a0282010100c1318fcc2e43cf2e7787333391d508791801e1df98c122176b82b420a3a2cfc34b2861abd610acaf4a727db204fd22d2ac55220da1d29352ddbbbcf83f894a546061e6ffd03a1657a230b2f83bc9ac6e64713500a21ff50b84418ffc50d6ed0b2a8733fee6d7039c7a6d6d204b975469532a93977d55556938c21d2537665a153fe2d79dcfa02879b2e9570d7bb75a22962121c694881ca54113fa796f047e579c04b988df789e1ffa8984a698923dc44e63667c1b6039477b2a6efc0813f7c79e7d88930c6e63c7f9c6d018180b5885f48315ac41f134a047019d257fc6d505cba673bbe9cf7c7b1c848ab3d7acef6128f9fc661a3636bcf6244b24377d6c1d0203010001
+CALLBACK: 1
+
+# TODO(aarongreen): Add test where unused_bits != 0
+
+LABEL: UID and Extension Tags (Leaf)
+SERVER: a382013a
+# TODO(aarongreen): Add test where tag != (kAsn1ContextSpecific | [123])
+
+# TODO(aarongreen): Add test with UIDs
+
+LABEL: Extensions (Leaf)
+SERVER: 30820136
+
+LABEL: BasicConstraints Extension (Leaf)
+SERVER: 30090603551d1304023000
+# TODO(aarongreen): Add test where nested structure is invalid
+
+LABEL: Netscape Certificate Type Extension (Leaf)
+SERVER: 301106096086480186f8420101040403020640
+# TODO(aarongreen): Add test where critical == true
+
+LABEL: Netscape Comment Extension (Leaf)
+SERVER: 303306096086480186f842010d042616244f70656e53534c2047656e65726174656420536572766572204365727469666963617465
+# TODO(aarongreen): Add test where critical == true
+
+LABEL: Subject Key Identifier Extension (Leaf)
+SERVER: 301d0603551d0e04160414014fcbf6fc7b1e0ba68c46afe34c37f04c5b7176
+# TODO(aarongreen): Add test where critical == true
+
+LABEL: Authority Key Identifier Extension (Leaf)
+SERVER: 30819c0603551d2304819430819180141a77d04e362ee69968183d99ac59d099adeecb71a175a4733071310b30090603550406130255533113301106035504080c0a43616c69666f726e69613116301406035504070c0d4d6f756e7461696e20566965773110300e060355040a0c07467563687369613111300f060355040b0c08566170696453534c3110300e06035504030c07526f6f7420434182021000
+# TODO(aarongreen): Add test where critical == true
+
+LABEL: KeyUsage Extension (Leaf)
+SERVER: 300e0603551d0f0101ff0404030205a0
+# TODO(aarongreen): Add test where nested structure is invalid
+# TODO(aarongreen): Add test where length != 2
+# TODO(aarongreen): Add test where critical == false
+# TODO(aarongreen): Add test where key usage is not valid for a leaf
+
+LABEL: Extended Key Usage Extension (Leaf)
+SERVER: 30130603551d25040c300a06082b06010505070301
+# TODO(aarongreen): Add test where nested structure is invalid
+
+# TODO(aarongreen): Add test with SubjectAltNames
+
+LABEL: Outer Algorithm ID (Leaf)
+SERVER: 300d06092a864886f70d01010b0500
+# TODO(aarongreen): Add test where nested structure is invalid
+# TODO(aarongreen): Add test where algorithm does not match inner
+
+LABEL: Signature (Leaf)
+SERVER: 03820101003316cc1afc65271147076a112559325c17ac9a20f19a6323db5e582d487d98590ddbad753929cc7e93ba08ff87275d72457ab731f8344463cc9d1cb66cef55c47008a4f97199397fae3411cf9e1534e857967b8134bc582258acf38be1a7b2a6be318405695f1203ebca2a783e64f71cbc224eab1c8f199cb24535d18e83bfefa35d9c93a6073f51c8e3a5e6308a3ad459f1b6a369cfd9ab2cd3bf1c1339b4887754e61dafc72d99836168f7e5d49c7d08303b3ae41433def60f588a29f79a970dbb5736e9db37553cd7a21e98bed675b3053eacc8e077e593e4b633d4617c44c855ee112b914d6746b1bf844da543158797a791be74ba055af8d8f1af30588f
+# TODO(aarongreen): Add test where unused_bits != 0
+
+##### Begin CA certificate #####
+LABEL: Certificate Length
+SERVER: 0003b8
+
+LABEL: Certificate (CA)
+SERVER: 308203b4
+
+LABEL: TBS Certificate (CA)
+SERVER: 3082029c
+
+LABEL: Version (CA)
+SERVER: a003020102
+
+LABEL: Serial (CA)
+SERVER: 02021000
+
+LABEL: Inner Algorithm ID (CA)
+SERVER: 300d06092a864886f70d01010b0500
+
+LABEL: Issuer DN (CA)
+SERVER: 3071310b30090603550406130255533113301106035504080c0a43616c69666f726e69613116301406035504070c0d4d6f756e7461696e20566965773110300e060355040a0c07467563687369613111300f060355040b0c08566170696453534c3110300e06035504030c07526f6f74204341
+
+LABEL: Validity (CA)
+SERVER: 301e
+
+LABEL: Not Before (CA)
+SERVER: 170d3136303632313137313834395a
+# TODO(aarongreen): Add test where time is after now
+
+LABEL: Not After (CA)
+SERVER: 170d3236303631393137313834395a
+# TODO(aarongreen): Add test where time is before now
+
+LABEL: Subject DN (CA)
+SERVER: 3061310b30090603550406130255533113301106035504080c0a43616c69666f726e69613110300e060355040a0c07467563687369613111300f060355040b0c08566170696453534c3118301606035504030c0f496e7465726d656469617465204341
+# TODO(aarongreen): Add test where this does not match the previous issuer DN.
+
+LABEL: SPKI Algorithm ID (CA)
+SERVER: 30820122300d06092a864886f70d0101010500
+
+LABEL: Public Key Preamble (CA)
+SERVER: 0382010f00
+
+LABEL: Public Key (CA)
+SERVER:3082010a0282010100f5c11634affad57fb702ba16a95d55409c4e90390c4f02841d179d784cba2163adeff457e214f4b1a762ec7fb445815eb9e13bdbba7d1fcf47288dc30b6fbbfc661928ce09911c2fe557b611554ddce7e641f4c8b53992ccd54d62189d98d1e4c9117b852d8da7b2b32a2800ecf6503add0f5f18530b4463fa6d52d86b8e896cf7e740782f0b2211736917fc5b310c87e05ef70c89e34015a0ee95e0cec47a3d8236cd9f3d2a12803523fa9a5a1dc87601085cde8389acfa1fce34bc08df9c4141fcf080a8560ff795e5ab3aa598a3b613ba41ac2294f24313b6046b0854335f99845efbf2751dd79c459146c13d53ff6af1461480b05bb023bfde8cda15bae50203010001
+
+LABEL: UID and Extension Tags (CA)
+SERVER: a366
+
+LABEL: Extensions (CA)
+SERVER: 3064
+
+LABEL: Subject Key Identifier Extension (CA)
+SERVER: 301d0603551d0e041604141a77d04e362ee69968183d99ac59d099adeecb71
+
+LABEL: Authority Key Identifier Extension (CA)
+SERVER: 301f0603551d230418301680143cdb67d316b0cdfa16382ed84991c99dcb5ff6e0
+
+LABEL: BasicConstraints Extension (CA)
+SERVER: 30120603551d130101ff040830060101ff020100
+# TODO(aarongreen): Add test where depth != 0 && critical == false
+# TODO(aarongreen): Add test where pathlen is invalid
+
+LABEL: KeyUsage Extension (CA)
+SERVER: 300e0603551d0f0101ff040403020186
+# TODO(aarongreen): Add test where key usage is not valid for a CA
+
+LABEL: Outer Algorithm ID (CA)
+SERVER: 300d06092a864886f70d01010b0500
+
+LABEL: Signature (CA)
+SERVER: 0382010100b7168da497a1d97af5e20674118c00f15bab2c466f0fe0afa4c7cce15f4ac46870043778361ed0dde1b9e8474bde31cb333318a7ea179fa519ce0a77ad7d607d4f9862cc382dfd2240509f67965d3be7aa3a3972012daab80cb9b6be932de5b3b77d002dbccb6696068e9332f8c3eef7f9d4de7ea0e33234852899d94b0fa2685fb51c784646a65bb8e05248d0fdd71980ebc0bb82963736c2d378cdcc9431d0c9f5bb7223b45bd98dd3ebb9df1c439a3b0ec14260572e6d7bbf46f22e35da61f572e62cba4291115b6345cb3973d9bb3b5e30a4358f28917e70939ca701010af7c8e0b0c985384e0e070dd3ff923f825b1c2a59b32b045c05bd44080378f14d
+
+# TODO(aarongreen): Check when leaf signature does not validate
+# TODO(aarongreen): Check when CA signature does not validate

@@ -1,5 +1,7 @@
-# .../x509v3/CMakeLists.txt
+# .../src/x509v3/CMakeLists.txt
 # Builds object files for certificate parsing and validation.
+
+add_subdirectory(test)
 
 add_library(
   x509v3
@@ -7,8 +9,9 @@ add_library(
   OBJECT
 
   asn1.c
-#  certificate.c
+  certificate.c
   oid.c
+  truststore.c
 )
 
 add_library(
@@ -17,6 +20,6 @@ add_library(
   OBJECT
 
   asn1_unittest.cc
-#  certificate_unittest.cc
+  certificate_unittest.cc
   oid_unittest.cc
 )
