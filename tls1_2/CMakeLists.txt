@@ -9,7 +9,7 @@ add_library(
   OBJECT
 
   ciphersuite.c
-  #config.c
+  config.c
   #extension.c
   #handshake.c
   #message.c

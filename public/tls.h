@@ -14,7 +14,7 @@
 
 #ifndef VAPIDSSL_PUBLIC_TLS_H
 #define VAPIDSSL_PUBLIC_TLS_H
-#if defined(__cplusplus)
+#ifdef __cplusplus
 extern "C" {
 #endif  // __cplusplus
 
@@ -44,25 +44,24 @@ typedef struct tls_st TLS;
 typedef uint64_t tls_connection_id_t;
 
 // TLS_size sets |out| to be the amount of memory needed for a call to
-// |TLS_new|, given the values currently configured in |config|.
-tls_result_t TLS_size(const TLS_CONFIG *config, size_t *out);
+// |TLS_init|, given the values currently configured in |config|.
+size_t TLS_size(const TLS_CONFIG *config);
 
 // TLS_connect_size sets |out| to be the amount of memory needed for a call to
 // |TLS_connect|, given the values currently in |config| and the UTF8-encoded
 // server name.
-tls_result_t TLS_connect_size(const TLS_CONFIG *config, size_t *out,
-                              const char *server);
+size_t TLS_connect_size(const TLS_CONFIG *config);
 
-// TLS_new takes a region of memory of |len| bytes starting at |mem| and
+// TLS_init takes a region of memory of |len| bytes starting at |mem| and
 // configures a TLS connection structure according to the parameters set in
 // |config| and associated with the platform-specific |connection_id|.
-// |TLS_CONFIG_freeze| must already have been called on |config|. |TLS_new|
+// |TLS_CONFIG_freeze| must already have been called on |config|. |TLS_init|
 // returns NULL on error.
 //
-// |TLS_new| is thread-safe when compiled with support for threads; multiple
+// |TLS_init| is thread-safe when compiled with support for threads; multiple
 // threads may create TLS connections using the same |config| concurrently.
-TLS *TLS_new(const TLS_CONFIG *config, tls_connection_id_t connection_id,
-             void *mem, size_t len);
+tls_result_t TLS_init(const TLS_CONFIG *config, void *mem, size_t len,
+                      tls_connection_id_t cid, const char *server, TLS **out);
 
 // TLS_connect performs a TLS 1.2 handshake using the given |tls| structure. It
 // uses |len| additional bytes of memory starting at |mem| to perform the
@@ -87,7 +86,7 @@ TLS *TLS_new(const TLS_CONFIG *config, tls_connection_id_t connection_id,
 // |TLS_connect| is thread-safe but does not block; if |TLS_connect| is called
 // concurrently with any TLS API with the same |tls|, it will generate a
 // |kTlsErrInvalidState| error and return |KFailure| immediately.
-tls_result_t TLS_connect(TLS *tls, const char *server, void *mem, size_t len);
+tls_result_t TLS_connect(TLS *tls, void *mem, size_t len);
 
 // TLS_read receives up to |num| bytes via the |tls| structure, puts them in
 // |buf|, and puts the number of bytes read in |out|. It returns |kTlsFailure|
@@ -149,7 +148,7 @@ tls_result_t TLS_shutdown(TLS *tls);
 // |TLS_cleanup| is thread-safe when compiled with support for threads.
 void *TLS_cleanup(TLS *tls);
 
-#if defined(__cplusplus)
+#ifdef __cplusplus
 }
 #endif  // __cplusplus
 #endif  // VAPIDSSL_PUBLIC_TLS_H

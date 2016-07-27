@@ -14,7 +14,7 @@
 
 #ifndef VAPIDSSL_PUBLIC_CONFIG_H
 #define VAPIDSSL_PUBLIC_CONFIG_H
-#if defined(__cplusplus)
+#ifdef __cplusplus
 extern "C" {
 #endif  // __cplusplus
 
@@ -36,9 +36,7 @@ typedef struct tls_config_st TLS_CONFIG;
 
 // Supported hash algorithms, numbered per RFC 5246, section 7.4.1.4.1
 // (https://tools.ietf.org/html/rfc5246#section-7.4.1.4.1). These should
-// correspond to the ciphersuites enumerated by |ciphersuite_t|. When adding new
-// hash algorithms, be sure to update |VAPIDSSL_HASHES| in
-// src/base/basictypes.h.
+// correspond to the ciphersuites enumerated by |ciphersuite_t|.
 typedef enum tls_hash_t {
   kTlsHashSHA256 = 4,
   kTlsHashSHA384 = 5,
@@ -47,9 +45,7 @@ typedef enum tls_hash_t {
 // Supported TLS cipher IDs, numbered per
 // https://tools.ietf.org/html/rfc5246#appendix-A.5,
 // https://tools.ietf.org/html/rfc5289#section-3, and
-// https://tools.ietf.org/html/draft-agl-tls-chacha20poly1305-04#section-6. When
-// adding new ciphersuites, be sure to update |VAPIDSSL_CIPHERSUITES| in
-// src/base/basictypes.h.
+// https://tools.ietf.org/html/draft-agl-tls-chacha20poly1305-04#section-6.
 typedef enum tls_ciphersuite_t {
   kTLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256 = 0xC02F,
   kTLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 = 0xC030,
@@ -57,9 +53,7 @@ typedef enum tls_ciphersuite_t {
 } tls_ciphersuite_t;
 
 // Supported TLS named EC curves, per
-// https://tools.ietf.org/html/draft-ietf-tls-curve25519-01. When adding new
-// elliptic curves, be sure to update |VAPIDSSL_ECCURVES| in
-// src/base/basictypes.h.
+// https://tools.ietf.org/html/draft-ietf-tls-curve25519-01.
 typedef enum tls_eccurve_t {
   kTlsCurve25519 = 0x001D,
 } tls_eccurve_t;
@@ -75,17 +69,16 @@ typedef enum tls_parameter_pref_t {
   kTlsReject,
 } tls_parameter_pref_t;
 
-// TLS_CONFIG_size sets |out| to be the amount of memory needed for a call to
-// |TLS_CONFIG_new| to be successful, given |num_thumbprints| to be trusted,
-// where each thumbprint is a |thumbprint_hash| digest of an X.509v3
-// certificate.
-tls_result_t TLS_CONFIG_size(size_t *out, tls_hash_t thumbprint_hash,
-                             size_t num_thumbprints);
+// TLS_CONFIG_size returns the amount of memory needed for a call to
+// |TLS_CONFIG_init| to be successful, given |num_trusted_issuers| to be
+// trusted.
+size_t TLS_CONFIG_size(size_t num_trusted_issuers);
 
-// TLS_CONFIG_new takes a region of memory of |len| bytes starting at |mem| and
+// TLS_CONFIG_init takes a region of memory of |len| bytes starting at |mem| and
 // configures a TLS config that uses |thumbprint_hash| for trusted certificate
 // digests.
-TLS_CONFIG *TLS_CONFIG_new(void *mem, size_t len, tls_hash_t thumbprint_hash);
+tls_result_t TLS_CONFIG_init(void *mem, size_t len, size_t num_trusted_issuers,
+                             TLS_CONFIG **out);
 
 // TLS_CONFIG_dup takes a region of memory of |len| bytes starting at |mem| and
 // configures a TLS config that is an unfrozen copy of |orig|.  This is useful
@@ -96,20 +89,21 @@ TLS_CONFIG *TLS_CONFIG_new(void *mem, size_t len, tls_hash_t thumbprint_hash);
 //   old config.
 // - Call |TLS_CONFIG_set_*| and |TLS_CONFIG_freeze| to modify and freeze the
 //   new config.
-// - Call |TLS_new| and |TLS_connect| to reestablish the connections.
+// - Call |TLS_init| and |TLS_connect| to reestablish the connections.
 //
 // This function is thread-safe when compiled with support for threads.
-TLS_CONFIG *TLS_CONFIG_dup(const TLS_CONFIG *orig, void *mem, size_t len);
+tls_result_t *TLS_CONFIG_dup(const TLS_CONFIG *orig, void *mem, size_t len,
+                             TLS_CONFIG *out);
 
-// TLS_CONFIG_add_trust adds trusted certificate |digest| of |len| bytes to
-// |config|.  |len| must match the output size of |config->thumbprint_hash|.
-//
-// This function is thread-safe when compiled with support for threads. It may
-// only be called when a |config| has not yet been frozen.
-tls_result_t TLS_CONFIG_add_trust(TLS_CONFIG *config, const uint8_t *digest,
-                                  size_t len);
+// TLS_CONFIG_trust_signer associates a |key| with a distinguished name |dn| and
+// adds them to the |coinfig|'s truststore.  Certificate chains that include a
+// certificate whose issuer DN matches |dn| and whose signature can be verified
+// using |key| will be considered trusted.
+tls_result_t TLS_CONFIG_trust_signer(TLS_CONFIG *config, const uint8_t *dn,
+                                     size_t dn_len, const uint8_t *key,
+                                     size_t key_len);
 
-// TLS_CONFIG_set_suite sets the preference |pref| for the cipher suite
+// TLS_CONFIG_set_ciphersuite sets the preference |pref| for the cipher suite
 // identified by |id| in |config|.  |kTlsPrefer| moves the suite to the head of
 // the list, |kTlsAccept| moves it to the end, and |kTlsReject| removes it from
 // the list.
@@ -117,17 +111,17 @@ tls_result_t TLS_CONFIG_add_trust(TLS_CONFIG *config, const uint8_t *digest,
 // This function is thread-safe when compiled with support for threads. It may
 // only be called when a |config| has not yet been frozen.
 tls_result_t TLS_CONFIG_set_ciphersuite(TLS_CONFIG *config,
-                                        tls_ciphersuite_t id,
+                                        tls_ciphersuite_t ciphersuite,
                                         tls_parameter_pref_t pref);
 
-// TLS_CONFIG_set_suite sets the preference |pref| for the elliptic curve
+// TLS_CONFIG_set_eccurve sets the preference |pref| for the elliptic curve
 // identified by |id| in |config|.  |kTlsPrefer| moves the suite to the head of
 // the list, |kTlsAccept| moves it to the end, and |kTlsReject| removes it from
 // the list.
 //
 // This function is thread-safe when compiled with support for threads. It may
 // only be called when a |config| has not yet been frozen.
-tls_result_t TLS_CONFIG_set_eccurve(TLS_CONFIG *config, tls_eccurve_t id,
+tls_result_t TLS_CONFIG_set_eccurve(TLS_CONFIG *config, tls_eccurve_t group,
                                     tls_parameter_pref_t pref);
 
 // TLS_CONFIG_set_max_name_len sets the maximum |size| for distinguished names
@@ -144,7 +138,7 @@ tls_result_t TLS_CONFIG_set_max_name_len(TLS_CONFIG *config, size_t size);
 // TLS_CONFIG_freeze marks the given |config| as frozen.  Following this call,
 // no further TLS_CONFIG_* API calls can be made using this |config| except
 // |TLS_CONFIG_dup| and |TLS_CONFIG_cleanup|. This call must be made before this
-// |config| can be used with |TLS_new|.
+// |config| can be used with |TLS_init|.
 //
 // This function is thread-safe when compiled with support for threads. It may
 // only be called when a |config| has not yet been frozen.
@@ -156,7 +150,7 @@ tls_result_t TLS_CONFIG_freeze(TLS_CONFIG *config);
 // This function is thread-safe when compiled with support for threads.
 void *TLS_CONFIG_cleanup(TLS_CONFIG *config);
 
-#if defined(__cplusplus)
+#ifdef __cplusplus
 }
 #endif  // __cplusplus
 #endif  // VAPIDSSL_PUBLIC_CONFIG_H
