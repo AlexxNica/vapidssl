@@ -15,7 +15,7 @@ add_library(
   message.c
   #prf.c
   record.c
-  #ticket.c
+  ticket.c
   #tls.c
 )
 
