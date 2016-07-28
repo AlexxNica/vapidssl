@@ -12,6 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <stdlib.h>
+#include <iostream>
+#include <string>
+
+#include "base/platform/test/io_mock.h"
 #include "base/platform/test/platform_helper.h"
 #include "base/test/error_helper.h"
 #include "third_party/gtest/googletest/include/gtest/gtest.h"
@@ -19,6 +24,7 @@
 namespace {
 
 static const char *kVerboseOpt = "-v";
+static const char *kIoDebugOpt = "-d";
 static const char *kBaseDirArg = "--base_dir=";
 // This is base_dir_ if building according to BUILDING.md.
 static const char *kDefaultBaseDir = "..";
@@ -48,6 +54,8 @@ int main(int argc, char **argv) {
     size_t base_dir_len = strlen(kBaseDirArg);
     if (arg.compare(kVerboseOpt) == 0) {
       verbose = true;
+    } else if (arg.compare(kIoDebugOpt) == 0) {
+      io_mock_set_verbose(kTrue);
     } else if (arg.compare(0, base_dir_len, kBaseDirArg) == 0) {
       std::string base_dir = arg.substr(base_dir_len);
       has_dir = ::vapidssl::PlatformHelper::SetBaseDir(base_dir);

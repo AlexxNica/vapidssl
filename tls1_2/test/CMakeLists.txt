@@ -8,5 +8,5 @@ add_library(
 
   config_helper.cc
   record_test.cc
-  #tls_helper.cc
+  tls_helper.cc
 )
