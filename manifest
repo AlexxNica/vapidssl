@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Jiri manifest file. See https://github.com/vanadium/go.jiri -->
 <manifest>
+  <imports>
+    <import manifest="minimal"
+            name="manifest"
+            remote="https://fuchsia.googlesource.com/manifest"/>
+  </imports>
   <projects>
     <project name="VapidSSL"
              remote="https://fuchsia.googlesource.com/vapidssl"

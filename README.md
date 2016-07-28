@@ -11,9 +11,11 @@ suffered many of the same development problems that plagued OpenSSL and led to
 the creation of BoringSSL in the first place. In general, if your environment
 can run BoringSSL, it should prefer that library over this one.
 
+VapidSSL is not an official Google product.
+
 ## Cloning via Jiri
 
-To recommended way to clone this repositories and its dependencies is using Jiri
+To recommended way to clone this repository and its dependencies is using Jiri
 (https://github.com/vanadium/go.jiri):
 
     jiri import -name=vapidssl manifest https://fuchsia.googlesource.com/vapidssl
