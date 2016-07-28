@@ -12,7 +12,7 @@ add_library(
   config.c
   #extension.c
   #handshake.c
-  #message.c
+  message.c
   #prf.c
   record.c
   #ticket.c
@@ -26,7 +26,7 @@ add_library(
 
   #extension_unittest.cc
   #handshake_unittest.cc
-  #message_unittest.cc
+  message_unittest.cc
   #prf_unittest.cc
   record_unittest.cc
 )
