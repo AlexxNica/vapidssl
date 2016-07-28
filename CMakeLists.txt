@@ -74,6 +74,8 @@ add_subdirectory(common)
 add_subdirectory(x509v3)
 add_subdirectory(tls1_2)
 
+add_subdirectory(test/tools)
+
 add_library(
   vapid
 

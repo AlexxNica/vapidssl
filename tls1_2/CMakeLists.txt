@@ -13,7 +13,7 @@ add_library(
   #extension.c
   #handshake.c
   message.c
-  #prf.c
+  prf.c
   record.c
   ticket.c
   #tls.c
@@ -27,6 +27,6 @@ add_library(
   #extension_unittest.cc
   #handshake_unittest.cc
   message_unittest.cc
-  #prf_unittest.cc
+  prf_unittest.cc
   record_unittest.cc
 )
