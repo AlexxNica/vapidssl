@@ -1,0 +1,67 @@
+# These values were taken from a packet capture of send_client_hello.rb.
+
+LABEL: Extensions Length (Client)
+CLIENT: 002d
+
+LABEL: SNI Extension Type (Client)
+CLIENT: 0000
+
+LABEL: SNI Extension Length (Client)
+CLIENT: 0013
+
+LABEL: SNI Extension Server Name List Length
+CLIENT: 0011
+
+LABEL: SNI Extension Server Name Type
+CLIENT: 00
+
+LABEL: SNI Extension Server Name Length
+CLIENT: 000e
+
+LABEL: SNI Extension Server Name
+CLIENT: 7777772e676f6f676c652e636f6d
+
+LABEL: Session Ticket Extension Type (Client)
+CLIENT: 0023
+
+LABEL: Session Ticket Extension Length (Client)
+CLIENT: 0000
+
+LABEL: Signature Algorithms Extension Type
+CLIENT: 000d
+
+LABEL: Signature Algorithms Extension Length
+CLIENT: 0006
+
+LABEL: Signature Algorithms Extension List Length
+CLIENT: 0004
+
+LABEL: Signature Algorithms Extension Data
+CLIENT: 04010501
+
+LABEL: Elliptic Curves Extension Type
+CLIENT: 000a
+
+LABEL: Elliptic Curves Extension Length
+CLIENT: 0004
+
+LABEL: Elliptic Curves Extension List Length
+CLIENT: 0002
+
+LABEL: Elliptic Curves Extension Data
+CLIENT: 001d
+
+LABEL: Extensions Length (Server)
+SERVER: 0008
+
+LABEL: SNI Extension Type (Server)
+SERVER: 0000
+
+LABEL: SNI Extension Length (Server)
+SERVER: 0000
+
+LABEL: Session Ticket Extension Type (Server)
+SERVER: 0023
+
+LABEL: Session Ticket Extension Length (Server)
+SERVER: 0000

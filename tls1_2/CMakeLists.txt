@@ -10,8 +10,8 @@ add_library(
 
   ciphersuite.c
   config.c
-  #extension.c
-  #handshake.c
+  extension.c
+  handshake.c
   message.c
   prf.c
   record.c
@@ -24,8 +24,8 @@ add_library(
 
   OBJECT
 
-  #extension_unittest.cc
-  #handshake_unittest.cc
+  extension_unittest.cc
+  handshake_unittest.cc
   message_unittest.cc
   prf_unittest.cc
   record_unittest.cc
