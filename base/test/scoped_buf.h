@@ -39,11 +39,11 @@ class ScopedBuf {
   explicit ScopedBuf(size_t len);
 
   // ScopedBuf(vector) creates a buffer makes and wraps a copy of the data in
-  // |bytes|./
-  explicit ScopedBuf(void *bytes, size_t len);
+  // |bytes|.
+  ScopedBuf(void *bytes, size_t len);
 
   // ScopedBuf(vector) creates a buffer makes and wraps a copy of the data in
-  // |bytes|./
+  // |bytes|.
   explicit ScopedBuf(const std::vector<uint8_t> &bytes);
 
   virtual ~ScopedBuf();

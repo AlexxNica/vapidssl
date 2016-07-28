@@ -16,7 +16,7 @@ add_library(
   prf.c
   record.c
   ticket.c
-  #tls.c
+  tls.c
 )
 
 add_library(
