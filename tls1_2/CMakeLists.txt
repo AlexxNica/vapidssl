@@ -1,7 +1,7 @@
 # .../src/tls1_2/CMakeLists.txt
 # Builds object files for TLS 1.2.
 
-#add_subdirectory(test)
+add_subdirectory(test)
 
 add_library(
   tls1_2
@@ -14,19 +14,19 @@ add_library(
   #handshake.c
   #message.c
   #prf.c
-  #record.c
+  record.c
   #ticket.c
   #tls.c
 )
 
-#add_library(
-  #tls1_2-unittests
+add_library(
+  tls1_2-unittests
 
-  #OBJECT
+  OBJECT
 
   #extension_unittest.cc
   #handshake_unittest.cc
   #message_unittest.cc
   #prf_unittest.cc
-  #record_unittest.cc
-#)
+  record_unittest.cc
+)

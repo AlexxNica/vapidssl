@@ -7,6 +7,6 @@ add_library(
   OBJECT
 
   config_helper.cc
-  #record_test.cc
+  record_test.cc
   #tls_helper.cc
 )

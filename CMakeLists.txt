@@ -119,7 +119,7 @@ add_library(
 
   # Depends on x509v3 and common
   $<TARGET_OBJECTS:tls1_2>
-  #$<TARGET_OBJECTS:tls1_2-test>
+  $<TARGET_OBJECTS:tls1_2-test>
 )
 target_link_libraries(vapid-test vapid-crypto)
 
@@ -132,7 +132,7 @@ add_executable(
   $<TARGET_OBJECTS:crypto-unittests>
   $<TARGET_OBJECTS:common-unittests>
   $<TARGET_OBJECTS:x509v3-unittests>
-  #$<TARGET_OBJECTS:tls1_2-unittests>
+  $<TARGET_OBJECTS:tls1_2-unittests>
 )
 target_link_libraries(vapid_test vapid-test gtest pthread)
 set_target_properties(vapid_test PROPERTIES COMPILE_FLAGS "${cxx_default} -g")
