@@ -55,7 +55,7 @@ int main(int argc, char **argv) {
     if (arg.compare(kVerboseOpt) == 0) {
       verbose = true;
     } else if (arg.compare(kIoDebugOpt) == 0) {
-      io_mock_set_verbose(kTrue);
+      io_mock_set_verbose(kOn);
     } else if (arg.compare(0, base_dir_len, kBaseDirArg) == 0) {
       std::string base_dir = arg.substr(base_dir_len);
       has_dir = ::vapidssl::PlatformHelper::SetBaseDir(base_dir);

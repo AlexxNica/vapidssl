@@ -51,6 +51,12 @@ typedef enum message_handshake_t {
   kFinished = 20,
 } message_handshake_t;
 
+// message_alert_level_t indicates the severity of an alert.
+typedef enum message_alert_level_t {
+  kWarning = 1,
+  kFatal = 2,
+} message_alert_level_t;
+
 // kSegments, kRecvNesting, and kSendNesting are stream parameters for a TLS 1.2
 // message.  They are externed to allow testing.
 extern const uint8_t kSegments;
@@ -106,7 +112,7 @@ tls_result_t message_send_ccs(MESSAGE *message, BUF *region,
 
 // message_send_alert writes an |alert| to |message|.  The alert may be either a
 // |fatal| error or warning.
-tls_result_t message_send_alert(MESSAGE *message, bool_t fatal,
+tls_result_t message_send_alert(MESSAGE *message, message_alert_level_t level,
                                 tls_alert_t alert);
 
 // message_send_handshake sends the header of a handshake message of the given

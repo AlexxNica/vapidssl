@@ -102,16 +102,16 @@ void TlsHelper::ResetHashes(io_mock_t io) {
   StreamHelper::ResetHashes(io);
   if (io == kIoServer && hash_) {
     // Add the selected hash to the server, so we can calculate Finished hashes
-    ScopedBuf &region = GetMemory(kIoServer);
+    ScopedBuf *region = GetMemory(kIoServer);
     STREAM *server_send = GetStream(kIoServer, kRecv);
-    ASSERT_TRUE(stream_add_hash(server_send, region.Get(), hash_));
+    ASSERT_TRUE(stream_add_hash(server_send, region->Get(), hash_));
   }
 }
 
 void TlsHelper::ResetClient() {
   ResetMemory(kIoClient);
-  ScopedBuf &region = GetMemory(kIoClient);
-  EXPECT_TRUE(TLS_init(GetConfig(), region.Raw(), region.Len(), kIoClient,
+  ScopedBuf *region = GetMemory(kIoClient);
+  EXPECT_TRUE(TLS_init(GetConfig(), region->Raw(), region->Len(), kIoClient,
                        sni_.c_str(), &tls_));
   ResetHashes(kIoClient);
 }
@@ -125,14 +125,14 @@ void TlsHelper::ResetServer() {
 void TlsHelper::ResetChunk(io_mock_t io, direction_t dir, CHUNK *out) {
   // kIoClient should be handled by |TlsHelper::ResetClient|
   assert(io == kIoServer);
-  ScopedBuf &region = GetMemory(io);
+  ScopedBuf *region = GetMemory(io);
   // Save handles to the records.
   if (dir == kSend) {
     server_tx_ = out;
   } else {
     server_rx_ = out;
   }
-  EXPECT_TRUE(record_init(GetConfig(), region.Get(), dir, out));
+  EXPECT_TRUE(record_init(GetConfig(), region->Get(), dir, out));
 }
 
 void TlsHelper::InvokeCallback(direction_t dir, ScopedBuf &buf) {
@@ -163,9 +163,9 @@ record_content_t TlsHelper::GetType() {
   }
   if (hash_) {
     STREAM *server_send = GetStream(kIoServer, kSend);
-    stream_set_hashing(server_send, type == kHandshake ? kTrue : kFalse);
+    stream_set_hashing(server_send, type == kHandshake ? kOn : kOff);
     STREAM *server_recv = GetStream(kIoServer, kRecv);
-    stream_set_hashing(server_recv, type == kHandshake ? kTrue : kFalse);
+    stream_set_hashing(server_recv, type == kHandshake ? kOn : kOff);
   }
   return record_type_;
 }

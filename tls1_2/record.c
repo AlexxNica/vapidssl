@@ -279,7 +279,7 @@ static tls_result_t record_recv_process(CHUNK *record) {
   assert(tag_size <= len);
   record_set_length(record, len - tag_size);
   // Make sure nonce is ready
-  return record_set_nonce(record, kRecv, kTrue);
+  return record_set_nonce(record, kRecv, kTrue /* pre-decrypt */);
 }
 
 // After open
@@ -313,7 +313,7 @@ static tls_result_t record_recv_postprocess(CHUNK *record) {
     chunk_add_warning(record);
   }
   // Separate seq_num and nonce, if necessary
-  return record_set_nonce(record, kRecv, kFalse);
+  return record_set_nonce(record, kRecv, kFalse /* post-decrypt */);
 }
 
 // Before seal
@@ -333,7 +333,7 @@ static tls_result_t record_send_preprocess(CHUNK *record) {
   buf_reset(length, 0);
   buf_put_val(length, kLengthLen, len);
   // Make sure nonce is ready
-  return record_set_nonce(record, kSend, kTrue);
+  return record_set_nonce(record, kSend, kTrue /* pre-encrypt */);
 }
 
 // After seal, before send
@@ -346,5 +346,5 @@ static tls_result_t record_send_process(CHUNK *record) {
   buf_reset(length, 0);
   buf_put_val(length, kLengthLen, len);
   // Separate seq_num and nonce, if necessary
-  return record_set_nonce(record, kSend, kFalse);
+  return record_set_nonce(record, kSend, kFalse /* post-encrypt */);
 }

@@ -87,13 +87,13 @@ TEST_F(BufDeathTest, WrapAndUnwrapBuf) {
   EXPECT_ERROR(kTlsErrVapid, kTlsErrBufferChanged);
   EXPECT_TRUE(buf_wrap(mem.get(), len, 0, &buf));
   // Check unwrapping works.
-  EXPECT_EQ(buf_unwrap(&buf), mem.get());
+  EXPECT_EQ(buf_unwrap(&buf, kDoWipe), mem.get());
   EXPECT_EQ(buf.raw, nullptr);
   EXPECT_EQ(buf.offset, 0U);
   EXPECT_EQ(buf.length, 0U);
   EXPECT_EQ(buf.max, 0U);
   // Check unwrapping an unwrapped buffer works.
-  EXPECT_EQ(buf_unwrap(&buf), nullptr);
+  EXPECT_EQ(buf_unwrap(&buf, kDoWipe), nullptr);
 }
 
 TEST_F(BufDeathTest, AllocAndFreeBuf) {

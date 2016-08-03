@@ -111,7 +111,7 @@ tls_result_t TLS_connect(TLS *tls, void *mem, size_t len) {
   if (!handshake_connect(handshake)) {
     return kTlsFailure;
   }
-  buf_unwrap(&tls->connect);
+  buf_unwrap(&tls->connect, kDoWipe);
   tls->state = kTlsEstablished;
   return kTlsSuccess;
 }
@@ -130,7 +130,7 @@ tls_result_t TLS_read(TLS *tls, void *out, size_t *out_len, size_t num) {
   if (out_len) {
     *out_len = buf_size(&tls->recv_retry) - buf_available(&tls->recv_retry);
   }
-  buf_unwrap(&tls->recv_retry);
+  buf_unwrap(&tls->recv_retry, kDoNotWipe);
   return kTlsSuccess;
 }
 
@@ -148,7 +148,7 @@ tls_result_t TLS_write(TLS *tls, const void *buf, size_t num) {
   if (!message_send_appdata(&tls->send, &tls->send_retry)) {
     return kTlsFailure;
   }
-  buf_unwrap(&tls->send_retry);
+  buf_unwrap(&tls->send_retry, kDoWipe);
   return kTlsSuccess;
 }
 
@@ -160,7 +160,7 @@ void *TLS_cleanup(TLS *tls) {
   void *raw = NULL;
   if (tls && buf_size(&tls->region) != 0) {
     // This call flattens *everything* within |tls|!
-    raw = buf_unwrap(&tls->region);
+    raw = buf_unwrap(&tls->region, kDoWipe);
   }
   return raw;
 }

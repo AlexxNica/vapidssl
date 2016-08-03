@@ -85,10 +85,10 @@ TEST_P(MessageDeathTest, InitWithBadParameters) {
 TEST_P(MessageDeathTest, SendAndRecvBadAlert) {
   ASSERT_TRUE(ReadNext());
   // Check null parameters
-  EXPECT_ASSERT(message_send_alert(nullptr, kFalse, kTlsErrCloseNotify));
+  EXPECT_ASSERT(message_send_alert(nullptr, kWarning, kTlsErrCloseNotify));
   EXPECT_ASSERT(message_recv_alert(nullptr, kTlsErrCloseNotify));
   // Check incorrect message
-  EXPECT_ASSERT(message_send_alert(&recv_, kFalse, kTlsErrCloseNotify));
+  EXPECT_ASSERT(message_send_alert(&recv_, kWarning, kTlsErrCloseNotify));
   EXPECT_ASSERT(message_recv_alert(&send_, kTlsErrCloseNotify));
 }
 
@@ -96,13 +96,13 @@ TEST_P(MessageTestOnce, SendAndRecvAlert) {
   ASSERT_TRUE(ReadNext());
   // Send and receive an alert normally
   ResetMessage();
-  EXPECT_TRUE(message_send_alert(&send_, kFalse, kTlsErrCloseNotify));
+  EXPECT_TRUE(message_send_alert(&send_, kWarning, kTlsErrCloseNotify));
   EXPECT_TRUE(message_recv_alert(&recv_, kTlsErrCloseNotify));
   // Discard other data when looking for an alert
   ResetMessage();
   EXPECT_TRUE(message_send_appdata(&send_, GetPlaintext(0)));
-  EXPECT_TRUE(message_send_alert(&send_, kFalse, kTlsErrCloseNotify));
-  EXPECT_TRUE(message_send_alert(&send_, kFalse, kTlsErrNoRenegotiation));
+  EXPECT_TRUE(message_send_alert(&send_, kWarning, kTlsErrCloseNotify));
+  EXPECT_TRUE(message_send_alert(&send_, kWarning, kTlsErrNoRenegotiation));
   EXPECT_TRUE(message_recv_alert(&recv_, kTlsErrCloseNotify));
 }
 
@@ -300,7 +300,7 @@ TEST_P(MessageTest, SendAndRecv) {
     EXPECT_TRUE(message_recv_appdata(&recv_, received_.Get()));
     EXPECT_PRED2(buf_equal, GetPlaintext(0), received_.Get());
     // Send and receive a close message
-    EXPECT_TRUE(message_send_alert(&send_, kTrue, kTlsErrCloseNotify));
+    EXPECT_TRUE(message_send_alert(&send_, kFatal, kTlsErrCloseNotify));
     EXPECT_TRUE(message_recv_alert(&recv_, kTlsErrCloseNotify));
   }
 }

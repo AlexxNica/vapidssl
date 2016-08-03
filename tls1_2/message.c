@@ -113,7 +113,7 @@ tls_result_t message_recv_ccs(MESSAGE *message, BUF *region,
       if (record_get_type(message->record) != kChangeCipherSpec) {
         return ERROR_SET(kTlsErrVapid, kTlsErrUnexpectedMessage);
       }
-      stream_set_hashing(&message->stream, kFalse);
+      stream_set_hashing(&message->stream, kOff);
       // Fall-through
       ++message->stage;
     case 2:
@@ -178,7 +178,7 @@ tls_result_t message_recv_handshake(MESSAGE *message,
       if (record_get_type(message->record) != kHandshake) {
         return ERROR_SET(kTlsErrVapid, kTlsErrUnexpectedMessage);
       }
-      stream_set_hashing(&message->stream, kTrue);
+      stream_set_hashing(&message->stream, kOn);
       // Fall-through
       ++message->stage;
     case 2:
@@ -219,7 +219,7 @@ tls_result_t message_recv_appdata(MESSAGE *message, BUF *data) {
       if (record_get_type(message->record) != kApplicationData) {
         return ERROR_SET(kTlsErrVapid, kTlsErrUnexpectedMessage);
       }
-      stream_set_hashing(&message->stream, kFalse);
+      stream_set_hashing(&message->stream, kOff);
       // Fall-through
       ++message->stage;
     case 2:
@@ -254,7 +254,7 @@ tls_result_t message_send_ccs(MESSAGE *message, BUF *region,
       if (!record_set_type(message->record, kChangeCipherSpec)) {
         return kTlsFailure;
       }
-      stream_set_hashing(&message->stream, kFalse);
+      stream_set_hashing(&message->stream, kOff);
       // Fall-through
       ++message->stage;
     case 2:
@@ -280,10 +280,9 @@ tls_result_t message_send_ccs(MESSAGE *message, BUF *region,
   }
 }
 
-tls_result_t message_send_alert(MESSAGE *message, bool_t fatal,
+tls_result_t message_send_alert(MESSAGE *message, message_alert_level_t level,
                                 tls_alert_t alert) {
   assert(message);
-  uint8_t level = 0;
   switch (message->stage) {
     case 0:
       // Alert messages may follow completed handshake messages.
@@ -297,12 +296,11 @@ tls_result_t message_send_alert(MESSAGE *message, bool_t fatal,
       if (!record_set_type(message->record, kAlert)) {
         return kTlsFailure;
       }
-      stream_set_hashing(&message->stream, kFalse);
+      stream_set_hashing(&message->stream, kOff);
       // Fall-through
       ++message->stage;
     case 2:
-      level = (fatal ? 2 : 1);
-      if (!stream_send_u8(&message->stream, level)) {
+      if (!stream_send_u8(&message->stream, (uint8_t)level)) {
         return kTlsFailure;
       }
       // Fall-through
@@ -344,7 +342,7 @@ tls_result_t message_send_handshake(MESSAGE *message, message_handshake_t type,
       if (!record_set_type(message->record, kHandshake)) {
         return kTlsFailure;
       }
-      stream_set_hashing(&message->stream, kTrue);
+      stream_set_hashing(&message->stream, kOn);
       // Fall-through
       ++message->stage;
     case 2:
@@ -390,7 +388,7 @@ tls_result_t message_send_appdata(MESSAGE *message, BUF *data) {
       if (!record_set_type(message->record, kApplicationData)) {
         return kTlsFailure;
       }
-      stream_set_hashing(&message->stream, kFalse);
+      stream_set_hashing(&message->stream, kOff);
       // Fall-through
       ++message->stage;
     case 2:

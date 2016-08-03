@@ -176,9 +176,9 @@ void StreamHelper::ResetMemory(io_mock_t io) {
   end->region.Reset(size);
 }
 
-// ScopedBuf &StreamHelper::GetMemory(io_mock_t io) {
-//   return (io == kIoServer ? server_.region : client_.region);
-// }
+ScopedBuf *StreamHelper::GetMemory(io_mock_t io) {
+  return (io == kIoServer ? &server_.region : &client_.region);
+}
 
 void StreamHelper::SetSegments(size_t segments) {
   segments_ = segments;
@@ -223,15 +223,16 @@ void StreamHelper::ResetServer() {
 void StreamHelper::ResetStream(io_mock_t io, direction_t dir, STREAM *out) {
   struct stream_end_st *end = GetEnd(io);
   struct stream_flow_st *flow = GetFlow(io, dir);
-  EXPECT_TRUE(stream_init(end->region.Get(), io, dir, segments_, flow->nesting, out));
+  EXPECT_TRUE(
+      stream_init(end->region.Get(), io, dir, segments_, flow->nesting, out));
   CHUNK *chunk = stream_get_chunk(out);
   ResetChunk(io, dir, chunk);
 }
 
 void StreamHelper::ResetChunk(io_mock_t io, direction_t direction, CHUNK *out) {
   struct stream_end_st *end = GetEnd(io);
-  EXPECT_TRUE(
-      chunk_set_region(out, end->region.Get(), sizeof(uint32_t), kAuthenticated));
+  EXPECT_TRUE(chunk_set_region(out, end->region.Get(), sizeof(uint32_t),
+                               kAuthenticated));
   EXPECT_TRUE(chunk_set_segment(out, 0, sizeof(uint32_t), kAuthenticated));
   EXPECT_TRUE(chunk_set_region(out, end->region.Get(), data_len_, kEncrypted));
   EXPECT_TRUE(chunk_set_text(out, 1, GetSize));

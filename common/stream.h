@@ -72,7 +72,7 @@ void stream_set_hashes(STREAM *stream, LIST *hashes);
 
 // stream_set_hashing determines whether bytes sent or received by the |stream|
 // will be added to its hashes or skipped.
-void stream_set_hashing(STREAM *stream, bool_t enabled);
+void stream_set_hashing(STREAM *stream, enabled_t enabled);
 
 // stream_add_hash allocates state for the given |hash| from |region|, and adds
 // it to the list of hashes that |stream| is updating.  It can fail if there is

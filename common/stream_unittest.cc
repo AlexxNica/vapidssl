@@ -302,7 +302,7 @@ TEST_P(StreamTest, SendAndRecvFragmented) {
   ScopedBuf recd(hash_get_output_size(hash_));
   // Hashes are shared.  Add it to one, but enable it on the other.
   EXPECT_TRUE(stream_add_hash(send_, region_.Get(), hash_));
-  stream_set_hashing(recv_, kTrue);
+  stream_set_hashing(recv_, kOn);
   while (ReadNext()) {
     // See test/generate_hash_data.rb.  Each iteration's |digest_| is the digest
     // of all previous iterations digests.

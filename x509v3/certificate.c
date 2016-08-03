@@ -741,7 +741,7 @@ static tls_result_t certificate_extension_type(CERTIFICATE *chain, ASN1 *asn1) {
   }
   chain->next = NULL;
   if (asn1_get_type(asn1) != kAsn1Boolean) {
-    return certificate_check_critical(chain, kFalse);
+    return certificate_check_critical(chain, kFalse /* not critical */);
   }
   chain->next = certificate_extension_critical;
   return kTlsSuccess;
@@ -753,10 +753,11 @@ static tls_result_t certificate_extension_critical(CERTIFICATE *chain,
     return kTlsFailure;
   }
   chain->next = NULL;
-  uint32_t critical;
+  uint32_t val;
   BUF *data = asn1_get_data(asn1);
-  buf_get_val(data, 1, &critical);
-  return certificate_check_critical(chain, critical != 0);
+  buf_get_val(data, 1, &val);
+  bool_t critical = (val == 0 ? kFalse : kTrue);
+  return certificate_check_critical(chain, critical);
 }
 
 static tls_result_t certificate_check_critical(CERTIFICATE *chain,

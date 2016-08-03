@@ -74,8 +74,6 @@ add_subdirectory(common)
 add_subdirectory(x509v3)
 add_subdirectory(tls1_2)
 
-add_subdirectory(test/tools)
-
 add_library(
   vapid
 
@@ -92,7 +90,7 @@ add_library(
   $<TARGET_OBJECTS:x509v3>
 
   # Depends on x509v3 and common
-  #$<TARGET_OBJECTS:tls1_2>
+  $<TARGET_OBJECTS:tls1_2>
 )
 target_link_libraries(vapid vapid-crypto)
 
@@ -156,9 +154,9 @@ add_test(NAME vapid_test COMMAND vapid_test --base_dir=${PROJECT_SOURCE_DIR})
 ################################################################################
 ### VapidSSL Tools ###
 
-#add_subdirectory(test)
+add_subdirectory(test/tools)
 
 ################################################################################
 ### VapidSSL Examples ###
 
-#add_subdirectory(examples)
+add_subdirectory(examples)

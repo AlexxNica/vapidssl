@@ -90,12 +90,12 @@ CHUNK *stream_get_chunk(STREAM *stream) {
 void stream_set_hashes(STREAM *stream, LIST *hashes) {
   stream_is_valid(stream);
   if (!hashes) {
-    stream->hashing = kFalse;
+    stream->hashing = kOff;
   }
   stream->hashes = hashes;
 }
 
-void stream_set_hashing(STREAM *stream, bool_t enabled) {
+void stream_set_hashing(STREAM *stream, enabled_t enabled) {
   stream_is_valid(stream);
   assert(!enabled || stream->hashes);
   stream->hashing = enabled;

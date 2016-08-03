@@ -21,6 +21,7 @@ extern "C" {
 #include <stddef.h>
 
 #include "base/buf.h"
+#include "base/types.h"
 
 // This is a mock of a platform specific I/O implementation of io.h.  It adds a
 // single function which can be used to configure whether the input and output
@@ -47,7 +48,7 @@ int io_mock_retry(void);
 // io_mock_set_verbose enables printing of all data being sent and received for
 // debugging purposes.  This should need to be enabled during unit testing; it
 // is included for the developer's convenience.
-void io_mock_set_verbose(bool_t enabled);
+void io_mock_set_verbose(enabled_t enabled);
 
 #ifdef __cplusplus
 }

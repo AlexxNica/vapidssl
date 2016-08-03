@@ -40,7 +40,7 @@ struct stream_st {
   size_t num_unselected_hashes;
   // hashing indicates whether data sent or received should be appended to each
   // of the |hashes|.
-  bool_t hashing;
+  enabled_t hashing;
   // nestings contains a list of the currently active nesting boundaries.  Each
   // byte received will decrement each element in the list. If any element is
   // zero then no more data may be received until that element is removed.

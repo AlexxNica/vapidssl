@@ -165,7 +165,7 @@ TEST_P(CertificateTest, ParseCertificateChain) {
   region_.Reset(certificate_size(kNameLen, kKeyLen));
   key_.Reset(kKeyLen);
   STREAM *client_recv = stream_helper_.GetStream(kIoClient, kRecv);
-  stream_set_hashing(client_recv, kTrue);
+  stream_set_hashing(client_recv, kOn);
   ASSERT_TRUE(certificate_init(region_.Get(), kNameLen, key_.Get(), &chain_));
   certificate_set_stream(client_recv, &chain_);
   certificate_set_trust(&truststore_, &chain_);

@@ -150,7 +150,7 @@ Dir.chdir(cert_dir) do
 end
 
 # Process each PEM file and append its results to the appropriate test data file
-tool = File.expand_path($0).gsub(/.*vapidssl\//, '')
+tool = File.expand_path($0).gsub(/.*\/test\//, 'test/')
 date = Time.now.strftime("%m/%d/%Y")
 data_files = Hash.new
 pem_files.each do |pem|
@@ -178,7 +178,7 @@ pem_files.each do |pem|
     # Append the data
     File.open(data_file, 'a') do |f|
       f.puts "# #{pem}"
-      f.puts "# DN: " + hexify(dn)
+      f.puts "DN: " + hexify(dn)
       f.puts "DATA: " + hexify(data)
       f.puts "KEY: " + hexify(key)
       f.puts "SIG: " + hexify(sig)

@@ -28,6 +28,12 @@ typedef enum bool_t {
   kTrue = 1,
 } bool_t;
 
+// enabled_t also represents a true/false value, but with on/off semantics.
+typedef enum enabled_t {
+  kOff = 0,
+  kOn = 1,
+} enabled_t;
+
 // direction_t indicates whether data is being received from or sent to a
 // server.
 typedef enum direction_t {

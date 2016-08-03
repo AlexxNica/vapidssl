@@ -72,6 +72,12 @@ extern "C" {
 // Memory buffer structure, defined in src/base/buf_internal.h.
 typedef struct buf_st BUF;
 
+// wipe_t indicates whether memory should be wiped or not.
+typedef enum wipe_t {
+  kDoWipe,
+  kDoNotWipe,
+} wipe_t;
+
 // BUF_AS casts a wrapped memory region to a specific type. This is useful for
 // storing and retrieving data structures using BUFs.  As an example, a
 // structure |foo| of type |struct foo_st| can be stored and retrieved using the
@@ -100,9 +106,10 @@ tls_result_t buf_wrap(void *mem, size_t len, size_t preallocate, BUF *out);
 
 // buf_unwrap stops |buf| from tracking a memory region.  It returns |buf|'s
 // memory if it was directly wrapped using |buf_wrap| or NULL if |buf| is
-// already unwrapped.  It is an error to call |buf_unwrap| on a |buf| that was
+// already unwrapped.  If |wipe_memory| is |kDoWipe| it will wipe the memory
+// before returning it. It is an error to call |buf_unwrap| on a |buf| that was
 // passed to |buf_malloc|.
-void *buf_unwrap(BUF *buf);
+void *buf_unwrap(BUF *buf, wipe_t wipe_memory);
 
 // buf_malloc configures |out| to track |len| bytes from |region|.  This memory
 // can be returned by calling |buf_free|. It is an error to call |buf_malloc|

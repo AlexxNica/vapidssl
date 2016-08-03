@@ -139,12 +139,12 @@ class StreamHelper {
   // |io|.
   virtual size_t MemorySize(io_mock_t io);
 
-  // Reset memory resets the memory region for one of the stream endpoints, as
-  // indicated by |io|.
+  // ResetMemory resets the memory region for one of the stream endpoints,
+  // as indicated by |io|.
   virtual void ResetMemory(io_mock_t io);
 
   // GetMemory returns the memory used for the stream endpoint given by |io|.
-  // ScopedBuf *GetMemory(io_mock_t io);
+  ScopedBuf *GetMemory(io_mock_t io);
 
   // SetSegments sets the number of |segments| in the streams' chunks.
   virtual void SetSegments(size_t segments);

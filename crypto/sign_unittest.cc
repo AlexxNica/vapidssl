@@ -65,6 +65,7 @@ class SignTest : public CryptoTest {
     ASSERT_NE(sign_, nullptr);
     hash_ = hash_find(test_data.parameter);
     ASSERT_NE(hash_, nullptr);
+    AddHexAttribute("DN", dn_);
     AddHexAttribute("DATA", signed_data_);
     AddHexAttribute("KEY", public_key_);
     AddHexAttribute("SIG", signature_);
@@ -92,6 +93,8 @@ class SignTest : public CryptoTest {
   ScopedBuf state_;
   // digest_ is the digest of the signed data.
   ScopedBuf digest_;
+  // dn_ is the distinguished name on the certificate (ignored).
+  ScopedBuf dn_;
   // signed_data_ is the signed data associated with the signature.
   ScopedBuf signed_data_;
   // public_key_ is the public key associated with the signature.

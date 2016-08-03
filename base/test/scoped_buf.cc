@@ -67,7 +67,7 @@ void ScopedBuf::Reset() {
 void ScopedBuf::Reset(size_t len) {
   uint8_t *raw = nullptr;
   if (buf_size(&buf_) != 0) {
-    raw = (uint8_t *)buf_unwrap(&buf_);
+    raw = (uint8_t *)buf_unwrap(&buf_, kDoWipe);
   }
   if (raw) {
     delete[] raw;

@@ -115,13 +115,15 @@ tls_result_t buf_wrap(void *mem, size_t len, size_t preallocate, BUF *out) {
   return kTlsSuccess;
 }
 
-void *buf_unwrap(BUF *buf) {
+void *buf_unwrap(BUF *buf, wipe_t wipe_memory) {
   if (buf_wraps(buf, NULL, 0)) {
     return NULL;
   }
   assert(buf_get_region(buf) == NULL);
   void *mem = buf_start_raw(buf);
-  memset(mem, 0, buf_size(buf));
+  if (wipe_memory == kDoWipe) {
+    memset(mem, 0, buf_size(buf));
+  }
   memset(buf, 0, sizeof(*buf));
   return mem;
 }

@@ -31,7 +31,7 @@
 static size_t g_mtu = 0;
 static BUF *g_recv = NULL;
 static BUF *g_send = NULL;
-bool_t g_verbose = kFalse;
+enabled_t g_verbose = kOff;
 
 // Forward declarations.
 
@@ -66,7 +66,7 @@ tls_result_t io_data(tls_connection_id_t cid, direction_t direction, BUF *buf) {
   }
 }
 
-void io_mock_set_verbose(bool_t enabled) {
+void io_mock_set_verbose(enabled_t enabled) {
   g_verbose = enabled;
 }
 

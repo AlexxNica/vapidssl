@@ -157,7 +157,7 @@ void *TLS_CONFIG_cleanup(TLS_CONFIG *config) {
   void *raw = NULL;
   if (config && buf_size(&config->region) != 0) {
     // This call flattens *everything* in |config|!
-    raw = buf_unwrap(&config->region);
+    raw = buf_unwrap(&config->region, kDoWipe);
   }
   return raw;
 }
