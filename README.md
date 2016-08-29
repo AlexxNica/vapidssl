@@ -1,5 +1,9 @@
 # VapidSSL
 
+**This library is _EXPERIMENTAL_.  It has not been thoroughly reviewed nor
+tested against all possible security bugs.  It should not be used in
+production. It is alpha-quality; bugs and/or vulnerabilties should be expected.**
+
 VapidSSL is a TLS 1.2 client derived from BoringSSL, which itself is a fork of
 OpenSSL that is designed to meet Google's needs.  VapidSSL is designed to work
 securely on constrained platforms with low memory and storage capacities.
